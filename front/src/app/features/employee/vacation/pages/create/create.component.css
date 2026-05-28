@@ -1,0 +1,485 @@
+.topbar {
+  height: 64px;
+  background: var(--panel-blue);
+  /* Ajustado a tu paleta global */
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 18px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 30;
+  box-shadow: 0 2px 8px rgba(12, 119, 209, 0.15);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.brand .logo {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Layout General (Conserva el fondo blanco puro exterior)
+   ========================================================================== */
+.app {
+  padding-top: 64px;
+  display: flex;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-white);
+  /* Forzado a tu fondo blanco puro global */
+}
+
+/* ==========================================================================
+   Sidebar Lateral (Usa variaciones armonizadas de tu azul global)
+   ========================================================================== */
+.sidebar {
+  width: 260px;
+  background: var(--panel-blue);
+  /* Sincronizado con tu color de panel principal */
+  color: var(--text-white);
+  padding-top: 18px;
+  padding-bottom: 18px;
+  transform: translateX(0);
+  transition: transform .28s ease;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  z-index: 25;
+  overflow: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.hamburger {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: var(--text-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  font-size: 18px;
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+}
+
+.menu-title {
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-list {
+  margin: 8px 0 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  color: var(--text-white);
+  transition: background-color 0.2s;
+}
+
+.menu-item .icon {
+  width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* El módulo activo adopta el color claro complementario de tus botones */
+.menu-item.active {
+  background: var(--button-light-bg);
+  color: var(--button-light-text);
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 28px;
+  transition: margin-left .28s ease;
+  background-color: #f8fafc;
+  /* Un gris sumamente tenue para contrastar las tarjetas */
+}
+
+.main.full {
+  margin-left: 0;
+}
+
+.card {
+  background: var(--bg-white);
+  border-radius: var(--btn-radius);
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Mensajes de éxito y error */
+.alert {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.alert-success {
+  background: #e6f9ed;
+  color: #1a7f37;
+  border: 1px solid #1a7f37;
+}
+
+.alert-error {
+  background: #ffeaea;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+/* Encabezado Interno */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.form-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-title h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.info-icon {
+  color: var(--panel-blue);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.balance-btn {
+  background-color: var(--panel-blue);
+  color: var(--text-white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.help-icon {
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Panel del Cuerpo */
+.form-body {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.illustration-pane {
+  flex: 1;
+  max-width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputs-pane {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Estructura de Filas Grid */
+.row-triple {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.row-single {
+  display: flex;
+  width: 100%;
+}
+
+.max-half {
+  max-width: 33.33%;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #334155;
+  background-color: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--panel-blue);
+  background-color: var(--bg-white);
+}
+
+/* Wrappers para Iconos empotrados en Inputs */
+.select-wrapper,
+.date-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+select {
+  width: 100%;
+  padding: 10px 34px 10px 14px;
+  /* Relleno derecho extra para que el texto no pise la flecha */
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #334155;
+  background-color: #f8fafc;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  /* Elimina la flecha fea por defecto de los navegadores (Chrome/Edge/Safari) */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select:focus {
+  border-color: var(--panel-blue);
+  background-color: var(--bg-white);
+}
+
+/* Estilo para el input readonly autocompletado */
+input[readonly] {
+  background-color: #f1f5f9;
+  /* Color ligeramente más gris para denotar que es automático */
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.arrow-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* Bloque Contador de Dias */
+.days-counter-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 62px;
+  padding-left: 10px;
+}
+
+.days-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.days-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Barra de Acciones Inferior */
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.back-btn {
+  background-color: var(--panel-blue);
+  color: var(--text-white);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.submit-btn {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: not-allowed;
+  transition: all 0.2s;
+}
+
+/* Estado activo del botón Enviar al validar el formulario */
+.submit-btn:not(:disabled) {
+  background-color: var(--panel-blue);
+  color: var(--text-white);
+  cursor: pointer;
+}
+
+.back-btn:hover,
+.submit-btn:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+.row-single.no-stretch {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.custom-textarea-box {
+  /* Controla que el ancho mida exactamente el equivalente a un bloque de inputs de arriba */
+  width: 33.33%;
+  /* Ocupa el ancho exacto de una de las 3 columnas superiores */
+  min-width: 240px;
+  /* Asegura un ancho mínimo óptimo en pantallas medianas */
+}
+
+textarea#comments {
+  width: 100%;
+  box-sizing: border-box;
+
+  /* Bloquea por completo que el usuario pueda estirarlo a lo ancho o a lo alto */
+  resize: none;
+
+  /* Garantiza la altura física exacta para renderizar 4 líneas de texto */
+  height: calc(4 * 1.5em + 20px);
+}
+
+/* ==========================================================================
+   Diseño Responsivo Adaptativo
+   ========================================================================== */
+@media (max-width: 1120px) {
+  .illustration-pane {
+    display: none;
+    /* Oculta la ilustración para dar prioridad a los inputs */
+  }
+
+  .inputs-pane {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .row-triple {
+    grid-template-columns: 1fr;
+    /* Apila los controles en una sola fila en móviles */
+    gap: 14px;
+  }
+
+  .max-half {
+    max-width: 100%;
+  }
+
+  .alignment-fix {
+    align-items: flex-start;
+  }
+
+  .days-counter-box {
+    height: auto;
+    margin-top: 4px;
+  }
+
+  .custom-textarea-box {
+    width: 100%;
+    /* En móviles sí toma el 100% para evitar que se corte el texto */
+    max-width: 100%;
+  }
+}

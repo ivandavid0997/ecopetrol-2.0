@@ -1,0 +1,26 @@
+<div *ngIf="show" [class]="snackbarClasses" role="alert">
+  <div class="snackbar-content">
+    <div class="snackbar-message">
+      {{ message }}
+    </div>
+
+    <div class="snackbar-actions">
+      <button
+        *ngIf="showConfirmButton"
+        type="button"
+        class="btn btn-confirm"
+        (click)="onConfirm()"
+      >
+        {{ confirmText }}
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-close"
+        (click)="onClose()"
+      >
+        {{ closeText }}
+      </button>
+    </div>
+  </div>
+</div>

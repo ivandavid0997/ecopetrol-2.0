@@ -1,0 +1,446 @@
+.topbar {
+  height: 64px;
+  background: var(--panel-blue);
+  /* Ajustado a tu paleta global */
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 18px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 30;
+  box-shadow: 0 2px 8px rgba(12, 119, 209, 0.15);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.brand .logo {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Layout General (Conserva el fondo blanco puro exterior)
+   ========================================================================== */
+.app {
+  padding-top: 64px;
+  display: flex;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-white);
+  /* Forzado a tu fondo blanco puro global */
+}
+
+/* ==========================================================================
+   Sidebar Lateral (Usa variaciones armonizadas de tu azul global)
+   ========================================================================== */
+.sidebar {
+  width: 260px;
+  background: var(--panel-blue);
+  /* Sincronizado con tu color de panel principal */
+  color: var(--text-white);
+  padding-top: 18px;
+  padding-bottom: 18px;
+  transform: translateX(0);
+  transition: transform .28s ease;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  z-index: 25;
+  overflow: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.hamburger {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: var(--text-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  font-size: 18px;
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+}
+
+.menu-title {
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-list {
+  margin: 8px 0 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  color: var(--text-white);
+  transition: background-color 0.2s;
+}
+
+.menu-item .icon {
+  width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* El módulo activo adopta el color claro complementario de tus botones */
+.menu-item.active {
+  background: var(--button-light-bg);
+  color: var(--button-light-text);
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 28px;
+  transition: margin-left .28s ease;
+  background-color: #f8fafc;
+  /* Un gris sumamente tenue para contrastar las tarjetas */
+}
+
+.main.full {
+  margin-left: 0;
+}
+
+.card {
+  background: var(--bg-white);
+  border-radius: var(--btn-radius);
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Mensajes de éxito y error */
+.alert {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.alert-success {
+  background: #e6f9ed;
+  color: #1a7f37;
+  border: 1px solid #1a7f37;
+}
+
+.alert-error {
+  background: #ffeaea;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+.form-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.form-title h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.form-body {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.illustration-pane {
+  flex: 1;
+  max-width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputs-pane {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Configurador Grid */
+.row-triple {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.row-single {
+  display: flex;
+  width: 100%;
+}
+
+.max-third {
+  max-width: 33.33%;
+  width: 100%;
+}
+
+/* Fila Dividida Especial para Diagnóstico y Archivo de la Imagen */
+.row-double-split {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.small-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #334155;
+  background-color: #f8fafc;
+  outline: none;
+  transition: all 0.2s;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--panel-blue);
+  background-color: var(--bg-white);
+}
+
+input[readonly] {
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.arrow-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* Contador de Días */
+.days-counter-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 62px;
+  padding-left: 10px;
+}
+
+.days-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.days-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Área de Comentarios de Diagnóstico Fijo */
+textarea#diag {
+  resize: none;
+  width: 100%;
+  height: calc(4 * 1.5em + 20px);
+  /* Equivalente físico exacto a 4 de alto */
+}
+
+/* Caja Dropzone de Documento Adjunto de la Imagen */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  padding: 24px;
+  height: calc(4 * 1.5em + 20px);
+  /* Alineado en altura exacta con el diagnóstico */
+  text-align: center;
+  gap: 12px;
+}
+
+.upload-status-text {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.file-stub-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+}
+
+.file-stub-btn:hover {
+  background-color: #f1f5f9;
+}
+
+/* Footer y Acciones */
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
+}
+
+.back-btn {
+  background-color: var(--panel-blue);
+  color: var(--text-white);
+  border: none;
+  padding: 12px 32px;
+  border-radius: var(--btn-radius);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  border: none;
+  padding: 12px 32px;
+  border-radius: var(--btn-radius);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: not-allowed;
+  transition: all 0.2s;
+}
+
+.submit-btn:not(:disabled) {
+  background-color: var(--panel-blue);
+  color: var(--text-white);
+  cursor: pointer;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .illustration-pane {
+    display: none;
+  }
+}
+
+@media (max-width: 840px) {
+
+  .row-triple,
+  .row-double-split {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .max-third {
+    max-width: 100%;
+  }
+
+  .upload-container,
+  textarea#diag {
+    height: auto;
+    padding: 16px;
+  }
+}

@@ -1,0 +1,213 @@
+<header class="topbar" role="banner">
+  <button class="hamburger" aria-label="Abrir menú" type="button" [ariaExpanded]="!isSidebarClosed"
+    (click)="toggleSidebar()">
+    <span class="hamburger-icon" aria-hidden="true">☰</span>
+  </button>
+
+  <div class="brand">
+    <div class="logo" aria-hidden="true">NTT</div>
+    <div class="brand-text">DATA</div>
+  </div>
+</header>
+
+<div class="app" role="application">
+
+  <nav class="sidebar" [class.closed]="isSidebarClosed">
+    <div class="menu-title">
+      <span>Menu</span>
+    </div>
+    <ul class="menu-list">
+
+      <li class="menu-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+        <span>Home</span>
+      </li>
+
+      <li class="menu-item" routerLink="/vacation" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-plane" aria-hidden="true"></i></span>
+        <span>Vacaciones</span>
+      </li>
+
+      <li class="menu-item" routerLink="/disabilities" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-clinic-medical" aria-hidden="true"></i></span>
+        <span>Incapacidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/calamity" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <span>Calamidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/birthday" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-birthday-cake" aria-hidden="true"></i></span>
+        <span>Día de Cumpleaños</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Capa oscura móvil interactiva -->
+  <div class="overlay" [class.show]="!isSidebarClosed" (click)="toggleSidebar()">
+  </div>
+
+  <main class="main" [class.full]="isSidebarClosed">
+    <div class="card">
+      <!-- Mensajes de éxito y error -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+      <!-- Cabecera de la solicitud según la imagen -->
+      <div class="form-header">
+        <div class="form-title">
+          <h2>Solicitud de Calamidad</h2>
+          <i class="far fa-question-circle info-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <!-- Cuerpo flexible dividido -->
+      <div class="form-body">
+
+        <!-- Ilustración de Calamidad / Ausencia (Columna Izquierda) -->
+        <div class="illustration-pane" aria-hidden="true">
+          <svg viewBox="0 0 500 400" width="100%" height="100%">
+            <!-- Marco de fondo redondeado de la imagen -->
+            <rect x="110" y="100" width="220" height="200" rx="32" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+            <path d="M 330 100 A 32 32 0 0 1 330 200 Z" fill="#1e293b" />
+            <!-- Líneas cinéticas horizontales -->
+            <line x1="30" y1="135" x2="140" y2="135" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round" />
+            <circle cx="30" cy="135" r="6" fill="#cbd5e1" />
+            <line x1="18" y1="220" x2="105" y2="220" stroke="#6366f1" stroke-width="12" stroke-linecap="round" />
+            <circle cx="112" cy="220" r="6" fill="#f43f5e" />
+            <line x1="22" y1="310" x2="142" y2="310" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round" />
+            <circle cx="22" cy="310" r="6" fill="#cbd5e1" />
+            <!-- Silueta estilizada de la mujer con abrigo largo de la imagen -->
+            <circle cx="215" cy="120" r="16" fill="#1e293b" />
+            <!-- Cuerpo / Abrigo -->
+            <path d="M 195 180 L 150 240 Q 215 170 230 150 L 265 260 L 205 320 L 225 320 L 260 270 L 250 350"
+              fill="#1e293b" />
+            <!-- Blusa Morada interna -->
+            <path d="M 205 145 L 225 145 L 215 175 Z" fill="#6366f1" />
+            <!-- Piernas y tacones -->
+            <line x1="185" y1="320" x2="185" y2="370" stroke="#1e293b" stroke-width="8" stroke-linecap="round" />
+            <line x1="205" y1="320" x2="205" y2="370" stroke="#1e293b" stroke-width="8" stroke-linecap="round" />
+            <!-- Zapatos -->
+            <path d="M 175 370 L 190 370 L 185 382 Z" fill="#1e293b" />
+            <path d="M 195 370 L 210 370 L 205 382 Z" fill="#1e293b" />
+          </svg>
+        </div>
+
+        <!-- Panel de Inputs Reactivos (Columna Derecha) -->
+        <form [formGroup]="calamityForm" class="inputs-pane" novalidate>
+
+          <!-- Fila 1: Datos Básicos -->
+          <div class="row-triple">
+            <div class="form-group">
+              <label for="empNum">* Numero de Empleado</label>
+              <div class="select-wrapper">
+                <select id="empNum" formControlName="employeeNumber">
+                  <option value="" disabled selected>Buscar</option>
+                  <option *ngFor="let emp of employeeList" [value]="emp.number">{{ emp.number }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="empName">* Nombre de Empleado</label>
+              <input id="empName" formControlName="employeeName" type="text" readonly placeholder="Se autocompleta" />
+            </div>
+
+            <div class="form-group">
+              <label for="bizUnit">* Unidad de Negocio</label>
+              <div class="select-wrapper">
+                <select id="bizUnit" formControlName="businessUnit">
+                  <option *ngFor="let unit of businessUnits" [value]="unit">{{ unit }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 2: Líder -->
+          <div class="row-single">
+            <div class="form-group max-third">
+              <label for="leader">* Nombre de Líder</label>
+              <div class="select-wrapper">
+                <select id="leader" formControlName="leaderName">
+                  <option value="" disabled selected>Buscar</option>
+                  <option *ngFor="let lead of leaders" [value]="lead">{{ lead }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 3: Tiempos y Contador -->
+          <div class="row-triple alignment-fix">
+            <div class="form-group">
+              <label for="start">* Fecha Inicio</label>
+              <div class="input-icon-wrapper">
+                <input id="start" formControlName="startDate" type="date" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="end">* Fecha Fin</label>
+              <div class="input-icon-wrapper">
+                <input id="end" formControlName="endDate" type="date" />
+              </div>
+            </div>
+
+            <div class="form-group days-counter-box">
+              <span class="days-label">Total Dias</span>
+              <span class="days-value">{{ totalDays }}</span>
+            </div>
+          </div>
+
+          <!-- Fila 4: Comentarios Reducidos y Adjuntos de la Imagen -->
+          <div class="row-double-split">
+            <div class="form-group">
+              <label for="comments">Comentarios</label>
+              <textarea id="comments" formControlName="comments" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>* Documentos Adjuntos</label>
+              <div class="upload-container">
+                <span class="upload-status-text">{{ attachedFileName }}</span>
+                <label class="file-stub-btn">
+                  <i class="fas fa-paperclip" aria-hidden="true"></i> Adjuntar un archivo
+                  <input type="file" (change)="onFileChange($event)" accept=".pdf,.png,.jpg,.jpeg"
+                    style="display: none;" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Barra de acciones inferior externa -->
+      <div class="form-footer">
+        <button class="back-btn" type="button" (click)="onGoBack()" [disabled]="isLoading">
+          Volver
+        </button>
+
+        <button class="submit-btn"
+                type="button"
+                [disabled]="calamityForm.invalid || isLoading"
+                (click)="onSubmit()">
+
+          <span *ngIf="!isLoading">Enviar</span>
+
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Enviando...
+          </span>
+
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,113 @@
+/* Contenedor principal */
+.snackbar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Animación visible */
+.snackbar.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Contenido interno */
+.snackbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.snackbar-message {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Acciones */
+.snackbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Botón confirmar */
+.btn-confirm {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.btn-confirm:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Botón cerrar */
+.btn-close {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-close:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Variantes por tipo */
+.snackbar-success {
+  background-color: #2e7d32;
+}
+
+.snackbar-error {
+  background-color: #c62828;
+}
+
+.snackbar-warning {
+  background-color: #ed6c02;
+}
+
+.snackbar-info {
+  background-color: #0288d1;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .snackbar {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    min-width: unset;
+    max-width: unset;
+  }
+
+  .snackbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .snackbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

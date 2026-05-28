@@ -1,0 +1,35 @@
+:root {
+  /* Paleta de colores Globales */
+  --bg-white: #ffffff;
+  --panel-blue: #0c77d1;
+  --button-light-bg: #c6e1fb;
+  --button-light-text: #045a9a;
+  --button-hover-blue: #045a9a;
+  --text-white: #ffffff;
+  --btn-radius: 12px;
+  --login-bg: #ffffff;
+  --primary-color: #007bff;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+* {
+  box-sizing: border-box;
+}
+/* Snackbars para mensajes de éxito y error */
+.snackbar-success {
+  background-color: #2e7d32 !important; /* verde */
+  color: #fff !important;
+}
+.snackbar-error {
+  background-color: #c62828 !important; /* rojo */
+  color: #fff !important;
+}

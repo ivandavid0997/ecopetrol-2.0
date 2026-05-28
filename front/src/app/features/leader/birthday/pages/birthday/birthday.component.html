@@ -1,0 +1,127 @@
+<!-- Topbar fija superior -->
+<header class="topbar" role="banner">
+  <button class="hamburger" aria-label="Abrir menú" type="button" [ariaExpanded]="!isSidebarClosed"
+    (click)="toggleSidebar()">
+    <span class="hamburger-icon" aria-hidden="true">☰</span>
+  </button>
+
+  <div class="brand">
+    <div class="logo" aria-hidden="true">NTT</div>
+    <div class="brand-text">DATA</div>
+  </div>
+</header>
+
+<div class="app" role="application">
+
+  <nav class="sidebar" [class.closed]="isSidebarClosed">
+    <div class="menu-title">
+      <span>Menu</span>
+    </div>
+    <ul class="menu-list">
+
+      <li class="menu-item" routerLink="/dashboard-leader" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+        <span>Home</span>
+      </li>
+
+      <li class="menu-item" routerLink="/vacation-leader" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-plane" aria-hidden="true"></i></span>
+        <span>Vacaciones</span>
+      </li>
+
+      <li class="menu-item" routerLink="/disabilities-leader" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-clinic-medical" aria-hidden="true"></i></span>
+        <span>Incapacidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/calamity-leader" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <span>Calamidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/birthday-leader" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-birthday-cake" aria-hidden="true"></i></span>
+        <span>Día de Cumpleaños</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Capa oscura móvil interactiva -->
+  <div class="overlay" [class.show]="!isSidebarClosed" (click)="toggleSidebar()">
+  </div>
+
+  <!-- Contenido principal que expande su margen al colapsar el menú -->
+  <main class="main" [class.full]="isSidebarClosed">
+    <div class="card">
+      <div class="page-header">
+        <div>
+          <!-- Contenedor flex para alinear el título y el botón en la misma línea -->
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <h1 class="page-title" style="margin: 0;">Día de Cumpleaños</h1>
+
+            <!-- Botón de recargar con icono -->
+            <button class="reload-btn" type="button" aria-label="Recargar solicitudes" (click)="reloadRequests()">
+              <i class="fas fa-sync-alt" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <p class="small-muted" style="margin-top: 4px;">
+            Total solicitudes: {{ vacationRequests.length }}
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" style="text-align:center; color: #c62828; padding: 24px 0;">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Tabla Responsiva -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cedula</th>
+              <th>Nombre Empleado</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Fin</th>
+              <th>Total Días</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="isLoading">
+              <td colspan="7">
+                <div class="loader-wrap">
+                  <div class="loader"></div>
+                  <div class="loader-text">Cargando solicitudes...</div>
+                </div>
+              </td>
+            </tr>
+            <tr *ngFor="let request of vacationRequests" [ngClass]="{'d-none': isLoading}">
+              <td><strong>{{ request.cedula }}</strong></td>
+              <td>{{ request.collaborator }}</td>
+              <td>{{ request.startDate }}</td>
+              <td>{{ request.endDate }}</td>
+              <td>{{ request.daysRequested }}</td>
+              <td>
+                <span class="status" [ngClass]="{
+                    'status-aprobado': request.status.toLowerCase() === 'aprobado',
+                    'status-pendiente': request.status.toLowerCase() === 'pendiente',
+                    'status-rechazado': request.status.toLowerCase() === 'rechazado'
+                  }">{{ request.status }}</span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="icon-btn icon-view" type="button" aria-label="Ver"
+                    (click)="viewRequest(request)">👁</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+</div>

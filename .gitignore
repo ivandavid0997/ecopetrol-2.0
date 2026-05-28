@@ -1,0 +1,46 @@
+# ──────────────────────────────────────────
+#  Angular / Node
+# ──────────────────────────────────────────
+front/node_modules/
+front/dist/
+front/.angular/
+front/.sass-cache/
+front/connect.lock
+front/coverage/
+front/libpeerconnection.log
+front/npm-debug.log
+front/yarn-error.log
+front/testem.log
+front/.DS_Store
+
+# ──────────────────────────────────────────
+#  Spring Boot / Gradle
+# ──────────────────────────────────────────
+back/talento/build/
+back/talento/.gradle/
+back/talento/out/
+back/talento/*.class
+back/talento/HELP.md
+
+# H2 base de datos en memoria (se regenera en cada arranque)
+back/data/*.mv.db
+back/data/*.trace.db
+
+# ──────────────────────────────────────────
+#  IDEs
+# ──────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ──────────────────────────────────────────
+#  Secrets / Entornos
+# ──────────────────────────────────────────
+.env
+.env.local
+*.pem
+*.key

@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "cedula": "123456789",
+    "collaborator": "Carlos Mendoza",
+    "birthdayDate": "05/06/1990",
+    "status": "Pendiente"
+  },
+  {
+    "id": 2,
+    "cedula": "987654321",
+    "collaborator": "Ana María Silva",
+    "birthdayDate": "12/07/1985",
+    "status": "Aprobado"
+  },
+  {
+    "id": 3,
+    "cedula": "456123789",
+    "collaborator": "Juan Pérez",
+    "birthdayDate": "20/08/1992",
+    "status": "Rechazado"
+  }
+]

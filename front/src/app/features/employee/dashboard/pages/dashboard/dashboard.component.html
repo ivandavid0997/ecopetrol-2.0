@@ -1,0 +1,54 @@
+<div class="frame" role="region" aria-label="Selector de tipo de ausencia">
+  <div class="content" role="main">
+    <!-- Ilustración Izquierda -->
+    <div class="illustration" aria-hidden="true">
+      <svg width="220" height="420" viewBox="0 0 220 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"
+        aria-label="Ilustración persona izquierda">
+        <rect x="0" y="350" width="220" height="6" fill="rgba(0,0,0,0.18)" />
+        <rect x="60" y="120" width="100" height="160" rx="18" fill="#15202b" />
+        <circle cx="110" cy="70" r="42" fill="#ffb3b3" />
+        <rect x="103" y="170" width="14" height="48" rx="3" fill="#5d7be0" />
+        <polygon points="110,218 100,240 120,240" fill="#5d7be0" />
+        <rect x="22" y="240" width="68" height="84" rx="12" fill="#f2f2f2" />
+        <path d="M44 240 L44 220" stroke="#15202b" stroke-width="4" stroke-linecap="round" />
+      </svg>
+    </div>
+
+    <!-- Contenido Central -->
+    <div class="center">
+      <h1>Elije el tipo de ausencia que vas a solicitar</h1>
+
+      <!-- Renderizado dinámico con directiva Angular -->
+      <div class="options-grid" role="list" aria-label="Opciones de ausencia">
+        <button *ngFor="let opt of absenceOptions" class="option-card" role="listitem" type="button"
+          [disabled]="opt.disabled" (click)="selectAbsence(opt)">
+          {{ opt.label }}
+        </button>
+      </div>
+
+      <div class="note">
+        Recuerda: Toda solicitud de ausencia debe ser validada y posteriormente aprobada por el líder de proyecto.
+      </div>
+    </div>
+
+    <!-- Ilustración Derecha -->
+    <div class="illustration" aria-hidden="true">
+      <svg width="240" height="420" viewBox="0 0 240 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"
+        aria-label="Ilustración persona derecha">
+        <rect x="10" y="360" width="220" height="6" fill="rgba(0,0,0,0.18)" />
+        <rect x="110" y="238" width="36" height="80" rx="8" fill="#14121a" />
+        <rect x="70" y="238" width="36" height="80" rx="8" fill="#14121a" />
+        <rect x="60" y="120" width="120" height="120" rx="18" fill="#6f4dfd" />
+        <circle cx="120" cy="70" r="36" fill="#ffb3b3" />
+        <rect x="136" y="150" width="90" height="80" rx="12" fill="#ffffff" transform="rotate(20 136 150)" />
+        <circle cx="196" cy="170" r="8" fill="#6f4dfd" transform="rotate(20 196 170)" />
+        <rect x="150" y="190" width="56" height="6" rx="3" fill="#cfd6e9" transform="rotate(20 150 190)" />
+      </svg>
+    </div>
+
+  </div>
+  <div class="content-change-module">
+    <button class="change-module" type="button" (click)="changeModule()">Cambiar Módulo</button>
+  </div>
+
+</div>

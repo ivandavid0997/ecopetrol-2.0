@@ -1,0 +1,16 @@
+<configuration>
+    <!-- Appender para consola en formato JSON -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- Puedes personalizar/añadir campos fijos aquí -->
+            <includeMdcKeyName>correlation_id</includeMdcKeyName>
+            <includeMdcKeyName>codigo_error</includeMdcKeyName>
+            <customFields>{"modulo":"talento"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Nivel ROOT, puedes ajustarlo a tu preferencia -->
+    <root level="INFO">s
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

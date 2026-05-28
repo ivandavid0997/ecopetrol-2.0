@@ -1,0 +1,27 @@
+<div class="container" role="main">
+  <div class="login-box" aria-hidden="false">
+    <!-- Conectamos el FormGroup y el evento de envío -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" id="loginForm" novalidate>
+
+      <label for="username">Usuario</label>
+      <input id="username" formControlName="username" type="text" autocomplete="username"
+        placeholder="Ingresa tu usuario" />
+
+      <label for="password">Contraseña</label>
+      <input id="password" formControlName="password" type="password" autocomplete="current-password"
+        placeholder="Ingresa tu contraseña" />
+
+      <!-- El atributo disabled y la clase CSS reaccionan dinámicamente -->
+      <button id="submitBtn" class="btn" [class.disabled]="loginForm.invalid" type="submit"
+        [disabled]="loginForm.invalid">
+        Iniciar sesión
+      </button>
+
+      <!-- Contenedor del mensaje de error, solo se renderiza si errorMessage tiene texto -->
+      <div *ngIf="errorMessage" class="helper error-message" id="status" aria-live="polite"
+        style="min-height: 18px; color: #ff3333; font-weight: bold; margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+    </form>
+  </div>
+</div>

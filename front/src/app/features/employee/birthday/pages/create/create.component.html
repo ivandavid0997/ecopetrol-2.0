@@ -1,0 +1,183 @@
+<header class="topbar" role="banner">
+  <button class="hamburger" aria-label="Abrir menú" type="button" [ariaExpanded]="!isSidebarClosed"
+    (click)="toggleSidebar()">
+    <span class="hamburger-icon" aria-hidden="true">☰</span>
+  </button>
+
+  <div class="brand">
+    <div class="logo" aria-hidden="true">NTT</div>
+    <div class="brand-text">DATA</div>
+  </div>
+</header>
+
+<div class="app" role="application">
+
+  <nav class="sidebar" [class.closed]="isSidebarClosed">
+    <div class="menu-title">
+      <span>Menu</span>
+    </div>
+    <ul class="menu-list">
+
+      <li class="menu-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+        <span>Home</span>
+      </li>
+
+      <li class="menu-item" routerLink="/vacation" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-plane" aria-hidden="true"></i></span>
+        <span>Vacaciones</span>
+      </li>
+
+      <li class="menu-item" routerLink="/disabilities" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-clinic-medical" aria-hidden="true"></i></span>
+        <span>Incapacidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/calamity" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <span>Calamidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/birthday" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-birthday-cake" aria-hidden="true"></i></span>
+        <span>Día de Cumpleaños</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Capa oscura móvil interactiva -->
+  <div class="overlay" [class.show]="!isSidebarClosed" (click)="toggleSidebar()">
+  </div>
+
+  <main class="main" [class.full]="isSidebarClosed">
+    <div class="card">
+      <!-- Mensajes de éxito y error -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+      <!-- Cabecera exacta de la captura -->
+      <div class="form-header">
+        <div class="form-title">
+          <h2>Solicitud Día de Cumpleaños</h2>
+          <i class="far fa-question-circle info-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <!-- Cuerpo de dos columnas -->
+      <div class="form-body">
+
+        <!-- Ilustración de Pastel / Celebración (Columna Izquierda) -->
+        <div class="illustration-pane" aria-hidden="true">
+          <svg viewBox="0 0 500 400" width="100%" height="100%">
+            <!-- Banderines de fondo de la imagen -->
+            <path d="M 50 120 Q 150 160 250 120 Q 350 160 450 120" stroke="#cbd5e1" stroke-dasharray="4 4"
+              fill="none" />
+            <polygon points="90,135 110,138 100,160" fill="#f1f5f9" />
+            <polygon points="380,135 400,138 390,160" fill="#f1f5f9" />
+
+            <!-- Pastel de tres pisos de la imagen -->
+            <rect x="80" y="300" width="280" height="40" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+            <rect x="80" y="324" width="280" height="12" rx="4" fill="#6366f1" />
+
+            <rect x="110" y="246" width="220" height="54" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+            <rect x="110" y="280" width="220" height="12" rx="4" fill="#6366f1" />
+
+            <rect x="140" y="200" width="160" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+
+            <!-- Vela y flama -->
+            <rect x="214" y="150" width="12" height="50" fill="#cbd5e1" />
+            <path d="M 220 122 Q 206 142 220 150 Q 234 142 220 122 Z" fill="#f43f5e" />
+
+            <!-- Silueta de la colaboradora soplando la vela -->
+            <circle cx="210" cy="50" r="14" fill="#1e293b" transform="translate(-40, 190)" />
+            <path d="M 195 180 Q 150 190 190 240 L 210 240 Z" fill="#1e293b" transform="translate(-40, 90)" />
+          </svg>
+        </div>
+
+        <!-- Inputs Reactivos (Columna Derecha) -->
+        <form [formGroup]="birthdayForm" class="inputs-pane" novalidate>
+
+          <!-- Fila 1: Datos de Identificación -->
+          <div class="row-triple">
+            <div class="form-group">
+              <label for="empNum">* Numero de Empleado</label>
+              <div class="select-wrapper">
+                <select id="empNum" formControlName="employeeNumber">
+                  <option value="" disabled selected>Buscar</option>
+                  <option *ngFor="let emp of employeeList" [value]="emp.number">{{ emp.number }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="empName">Nombre de Empleado</label>
+              <input id="empName" formControlName="employeeName" type="text" readonly placeholder="Se autocompleta" />
+            </div>
+
+            <div class="form-group">
+              <label for="bizUnit">* Unidad de Negocio</label>
+              <div class="select-wrapper">
+                <select id="bizUnit" formControlName="businessUnit">
+                  <option *ngFor="let unit of businessUnits" [value]="unit">{{ unit }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 2: Líder y Única fecha de Disfrute -->
+          <div class="row-double-equal">
+            <div class="form-group">
+              <label for="leader">* Nombre de Líder</label>
+              <div class="select-wrapper">
+                <select id="leader" formControlName="leaderName">
+                  <option value="" disabled selected>Buscar</option>
+                  <option *ngFor="let lead of leaders" [value]="lead">{{ lead }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="start">* Fecha Inicio</label>
+              <input id="start" formControlName="startDate" type="date" />
+            </div>
+          </div>
+
+          <!-- Fila 3: Caja de comentarios extendida a lo ancho de la columna derecha -->
+          <div class="row-single">
+            <div class="form-group">
+              <label for="comments">Comentario</label>
+              <textarea id="comments" formControlName="comments" rows="4"></textarea>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Barra de acciones inferior externa -->
+      <div class="form-footer">
+        <button class="back-btn" type="button" (click)="onGoBack()" [disabled]="isLoading">
+          Volver
+        </button>
+
+        <button class="submit-btn"
+                type="button"
+                [disabled]="birthdayForm.invalid || isLoading"
+                (click)="onSubmit()">
+
+          <span *ngIf="!isLoading">Enviar</span>
+
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Enviando...
+          </span>
+
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

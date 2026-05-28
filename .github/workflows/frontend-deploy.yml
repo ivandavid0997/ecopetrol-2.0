@@ -1,0 +1,58 @@
+name: Deploy Frontend - Angular (App Service)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'front/**'
+      - '.github/workflows/frontend-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: front/package-lock.json
+
+      - name: Install dependencies
+        working-directory: front
+        run: npm ci
+
+      - name: Build Angular (production)
+        working-directory: front
+        run: npx ng build --configuration production
+
+      - name: Assemble deploy package
+        run: |
+          mkdir -p deploy-pkg/dist
+          cp front/server.js deploy-pkg/
+          cp -r front/dist/mocks-ecopetrol deploy-pkg/dist/
+          cat > deploy-pkg/package.json <<'EOF'
+          {
+            "name": "talento-front-runtime",
+            "version": "1.0.0",
+            "private": true,
+            "scripts": { "start": "node server.js" },
+            "dependencies": {
+              "express": "^4.22.2",
+              "http-proxy-middleware": "^3.0.5"
+            }
+          }
+          EOF
+          cd deploy-pkg && npm install --omit=dev --silent
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: app-central-ecopetrol
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deploy-pkg

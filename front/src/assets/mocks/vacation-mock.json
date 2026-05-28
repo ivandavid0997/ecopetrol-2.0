@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "cedula": "123456789",
+    "collaborator": "Carlos Mendoza",
+    "startDate": "01/06/2026",
+    "endDate": "15/06/2026",
+    "daysRequested": 15,
+    "status": "Aprobado"
+  },
+  {
+    "id": 2,
+    "cedula": "987654321",
+    "collaborator": "Ana María Silva",
+    "startDate": "10/07/2026",
+    "endDate": "17/07/2026",
+    "daysRequested": 7,
+    "status": "Rechazado"
+  },
+  {
+    "id": 3,
+    "cedula": "456123789",
+    "collaborator": "Juan Pérez",
+    "startDate": "20/08/2026",
+    "endDate": "27/08/2026",
+    "daysRequested": 7,
+    "status": "Pendiente"
+  }
+]

@@ -1,0 +1,205 @@
+<!-- Topbar fija superior -->
+<header class="topbar" role="banner">
+  <button class="hamburger" aria-label="Abrir menú" type="button" [ariaExpanded]="!isSidebarClosed"
+    (click)="toggleSidebar()">
+    <span class="hamburger-icon" aria-hidden="true">☰</span>
+  </button>
+
+  <div class="brand">
+    <div class="logo" aria-hidden="true">NTT</div>
+    <div class="brand-text">DATA</div>
+  </div>
+</header>
+
+<div class="app" role="application">
+
+  <nav class="sidebar" [class.closed]="isSidebarClosed">
+    <div class="menu-title">
+      <span>Menu</span>
+    </div>
+    <ul class="menu-list">
+
+      <li class="menu-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+        <span>Home</span>
+      </li>
+
+      <li class="menu-item" routerLink="/vacation" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-plane" aria-hidden="true"></i></span>
+        <span>Vacaciones</span>
+      </li>
+
+      <li class="menu-item" routerLink="/disabilities" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-clinic-medical" aria-hidden="true"></i></span>
+        <span>Incapacidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/calamity" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <span>Calamidad</span>
+      </li>
+
+      <li class="menu-item" routerLink="/birthday" routerLinkActive="active">
+        <span class="icon"><i class="fas fa-birthday-cake" aria-hidden="true"></i></span>
+        <span>Día de Cumpleaños</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Capa oscura móvil interactiva -->
+  <div class="overlay" [class.show]="!isSidebarClosed" (click)="toggleSidebar()">
+  </div>
+
+  <!-- Contenido principal que expande su margen al colapsar el menú -->
+  <main class="main" [class.full]="isSidebarClosed">
+    <div class="card">
+      <!-- Mensajes de éxito y error -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Encabezado interno de la tarjeta de solicitud -->
+      <div class="form-header">
+        <div class="form-title">
+          <h2>Solicitud de Vacaciones</h2>
+          <i class="far fa-question-circle info-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+
+      <!-- Cuerpo flexible del formulario -->
+      <div class="form-body">
+
+        <!-- Bloque Izquierdo: Ilustración de viaje -->
+        <div class="illustration-pane" aria-hidden="true">
+          <svg viewBox="0 0 500 400" width="100%" height="100%">
+            <!-- Suelo / Línea base -->
+            <line x1="50" y1="340" x2="450" y2="340" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round" />
+            <!-- Silueta simplificada de la camioneta -->
+            <rect x="120" y="180" width="220" height="130" rx="24" fill="#f1f5f9" />
+            <rect x="140" y="220" width="180" height="90" fill="#f1f5f9" />
+            <!-- Parabrisas y ventanas -->
+            <path d="M 140 220 L 170 190 L 300 190 L 320 220 Z" fill="#cbd5e1" />
+            <!-- Llanta de repuesto trasera -->
+            <circle cx="230" cy="250" r="45" fill="#334155" stroke="#ffffff" stroke-width="8" />
+            <circle cx="230" cy="250" r="20" fill="#f1f5f9" />
+            <!-- Equipaje superior -->
+            <rect x="180" y="145" width="45" height="45" rx="8" fill="#475569" />
+            <circle cx="250" cy="165" r="25" fill="#f43f5e" />
+            <!-- Silueta persona sentada arriba -->
+            <circle cx="295" cy="130" r="14" fill="#1e293b" />
+            <path d="M 285 144 Q 295 160 305 180 L 320 230" stroke="#1e293b" stroke-width="18" stroke-linecap="round" />
+            <!-- Silueta persona parada derecha -->
+            <circle cx="365" cy="180" r="12" fill="#1e293b" />
+            <rect x="353" y="195" width="24" height="70" rx="10" fill="#1e293b" />
+            <line x1="360" y1="265" x2="360" y2="338" stroke="#1e293b" stroke-width="8" stroke-linecap="round" />
+            <line x1="370" y1="265" x2="370" y2="338" stroke="#1e293b" stroke-width="8" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <!-- Bloque Derecho: Inputs vinculados al FormGroup -->
+        <form [formGroup]="vacationForm" (ngSubmit)="onSubmit()" class="inputs-pane" novalidate>
+
+          <div class="row-triple">
+            <!-- Ajustado a Selector Dinámico -->
+            <div class="form-group">
+              <label for="empNum">* Número de Empleado</label>
+              <div class="select-wrapper">
+                <select id="empNum" formControlName="employeeNumber">
+                  <option value="" disabled selected>Seleccione un número</option>
+                  <option *ngFor="let emp of employeeList" [value]="emp.number">{{ emp.number }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+
+            <!-- Mantiene input tradicional (Bloqueado desde TS para autocompletado seguro) -->
+            <div class="form-group">
+              <label for="empName">* Nombre de Empleado</label>
+              <input id="empName" formControlName="employeeName" type="text" placeholder="Se autocompleta" readonly />
+            </div>
+
+            <!-- Ajustado a Selector Dinámico -->
+            <div class="form-group">
+              <label for="bizUnit">* Unidad de Negocio</label>
+              <div class="select-wrapper">
+                <select id="bizUnit" formControlName="businessUnit">
+                  <option value="" disabled selected>Seleccione unidad</option>
+                  <option *ngFor="let unit of businessUnits" [value]="unit">{{ unit }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="row-single">
+            <!-- Ajustado a Selector Dinámico -->
+            <div class="form-group max-half">
+              <label for="leader">* Nombre de Líder</label>
+              <div class="select-wrapper">
+                <select id="leader" formControlName="leaderName">
+                  <option value="" disabled selected>Seleccione un líder</option>
+                  <option *ngFor="let lead of leaders" [value]="lead">{{ lead }}</option>
+                </select>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="row-triple alignment-fix">
+            <div class="form-group">
+              <label for="start">* Fecha Inicio</label>
+              <div class="date-wrapper">
+                <input id="start" formControlName="startDate" type="date" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="end">* Fecha Fin</label>
+              <div class="date-wrapper">
+                <input id="end" formControlName="endDate" type="date" />
+              </div>
+            </div>
+
+            <div class="form-group days-counter-box">
+              <span class="days-label">Total Días</span>
+              <span class="days-value">{{ totalDays }}</span>
+            </div>
+          </div>
+
+          <div class="row-single no-stretch">
+            <div class="form-group custom-textarea-box">
+              <label for="comments">Comentarios</label>
+              <!-- Se fija a 4 filas de alto de forma estricta -->
+              <textarea id="comments" formControlName="comments" rows="4"></textarea>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Barra de acciones inferior separada -->
+      <div class="form-footer">
+        <button class="back-btn" type="button" (click)="onGoBack()" [disabled]="isLoading">
+          Volver
+        </button>
+
+        <button class="submit-btn"
+                type="button"
+                [disabled]="vacationForm.invalid || isLoading"
+                (click)="onSubmit()">
+
+          <span *ngIf="!isLoading">Enviar</span>
+
+          <span *ngIf="isLoading">
+            <i class="fas fa-spinner fa-spin"></i> Enviando...
+          </span>
+
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>

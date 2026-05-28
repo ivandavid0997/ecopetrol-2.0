@@ -1,0 +1,26 @@
+<div class="screen-wrapper">
+  <div class="container" role="main">
+    <h1>Bienvenidos</h1>
+
+    <div class="roles-grid">
+      <button class="role-card" type="button" (click)="selectRole('dashboard')" [disabled]="!empleadoEnabled"
+        [ngClass]="{'disabled': !empleadoEnabled}">
+        <i class="fas fa-user-tie" aria-hidden="true"></i>
+        <span>Empleado</span>
+      </button>
+
+      <button class="role-card" type="button" (click)="selectRole('dashboard-leader')" [disabled]="!liderEnabled"
+        [ngClass]="{'disabled': !liderEnabled}">
+        <i class="fas fa-user-cog" aria-hidden="true"></i>
+        <span>Líder</span>
+      </button>
+
+      <button class="role-card" type="button" (click)="selectRole('people')" [disabled]="!peopleEnabled"
+        [ngClass]="{'disabled': !peopleEnabled}">
+        <i class="fas fa-users" aria-hidden="true"></i>
+        <span>People</span>
+      </button>
+    </div>
+    <p class="subtitle">Elija su rol de usuario</p>
+  </div>
+</div>
