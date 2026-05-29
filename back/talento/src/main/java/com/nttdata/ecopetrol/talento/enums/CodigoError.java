@@ -7,7 +7,27 @@ public enum CodigoError {
     LOGIN_FALLIDO("TLNT-004", "Falta campos login", "Revisa los campos enviados al login."),
     SIN_DIAS_SUFI("TLNT-005", "Sin días suficientes", "Consulte su saldo de días."),
     VALIDACION_INTERRUP("TLNT-006", "Validación interrumpida", "Reintente la operación."),
-    ERROR_VALIDACION("TLNT-007", "Error inesperado validación", "Reporte al soporte.");
+    ERROR_VALIDACION("TLNT-007", "Error inesperado validación", "Reporte al soporte."),
+    PASSWORD_INCORRECTA(
+            "TLNT-008",
+            "Contraseña incorrecta",
+            "Verifique su contraseña o reinicie si la olvidó."
+    ),
+    USUARIO_BLOQUEADO(
+            "TLNT-009",
+            "Usuario bloqueado temporalmente",
+            "Espere el tiempo indicado o contacte a soporte si el problema persiste."
+    ),
+    USUARIO_BLOQUEADO_PERMANENTE(
+            "TLNT-010",
+            "Usuario bloqueado permanentemente",
+            "Contacte a soporte para desbloqueo."
+    ),
+    INTENTOS_EXCEDIDOS(
+            "TLNT-011",
+            "Intentos de login excedidos",
+            "Espere unos minutos e intente nuevamente."
+    );
 
 
     private final String codigo;

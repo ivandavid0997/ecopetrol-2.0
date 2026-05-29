@@ -1,5 +1,6 @@
 package com.nttdata.ecopetrol.talento.model;
 
+import com.nttdata.ecopetrol.talento.enums.Estado;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -22,7 +23,10 @@ public class Incapacidad {
     private Date fechaFin;           // Lo mismo aquí
     private Integer totalDias;       // No se valida si es negativo o null
     private String diagnostico;      // Texto libre sin restricciones
-    private String estado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Estado estado;
 
     @Lob
     private String archivoAdjunto;
@@ -74,11 +78,11 @@ public class Incapacidad {
     public String getDiagnostico() { return diagnostico; }
     public void setDiagnostico(String diagnostico) { this.diagnostico = diagnostico; }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 

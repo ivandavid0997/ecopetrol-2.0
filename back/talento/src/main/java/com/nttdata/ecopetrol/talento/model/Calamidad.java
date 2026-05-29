@@ -1,5 +1,6 @@
 package com.nttdata.ecopetrol.talento.model;
 
+import com.nttdata.ecopetrol.talento.enums.Estado;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -19,7 +20,10 @@ public class Calamidad {
     private Date fechaFin;
     private Integer totalDias;
     private String comentario;
-    private String estado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Estado estado;
 
     @Lob
     private String archivoAdjunto;
@@ -65,14 +69,6 @@ public class Calamidad {
     public String getComentario() { return comentario; }
     public void setComentario(String comentario) { this.comentario = comentario; }
 
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
     public Usuario getLider() {
         return lider;
     }
@@ -95,5 +91,13 @@ public class Calamidad {
 
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
     }
 }

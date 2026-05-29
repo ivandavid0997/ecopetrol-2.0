@@ -1,5 +1,6 @@
 package com.nttdata.ecopetrol.talento.model;
 
+import com.nttdata.ecopetrol.talento.enums.Estado;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -16,7 +17,11 @@ public class DiaCumpleanio {
     private String unidadNegocio;
     private Date fechaCumpleanio;       // Fecha del cumpleaños
     private String comentario;          // Comentario adicional sin validación
-    private String estado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Estado estado;
+
     @ManyToOne
     @JoinColumn(name = "lider_id")
     private Usuario lider;
@@ -54,14 +59,6 @@ public class DiaCumpleanio {
         this.unidadNegocio = unidadNegocio;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
     public Usuario getLider() {
         return lider;
     }
@@ -76,5 +73,13 @@ public class DiaCumpleanio {
 
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
     }
 }

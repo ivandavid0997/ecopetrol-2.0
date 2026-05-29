@@ -14,17 +14,17 @@ DELETE FROM usuarios;
 -- ----------------------------------------------------------------
 -- USUARIOS  (id explícito para poder referenciar en FKs)
 -- ----------------------------------------------------------------
-INSERT INTO usuarios (id, nombre, rol, usuario, numero_empleado, unidad_negocio) VALUES
-(1, 'Nidia Patricia Vivas Rocha',        'LIDER',    'nvivas',    301001, 'Application Services (AS)'),
-(2, 'Sergio Alejandro Torres Mejía',     'LIDER',    'storres',   301002, 'Digital Strategy & Business'),
-(3, 'Carlos Andrés Medina Vargas',       'EMPLEADO', 'cmedina',   401001, 'Application Services (AS)'),
-(4, 'Diana Carolina Herrera Montoya',    'EMPLEADO', 'dherrera',  401002, 'Application Services (AS)'),
-(5, 'Jhon Fredy Parra López',            'EMPLEADO', 'jparra',    401003, 'Application Services (AS)'),
-(6, 'Ana María Gutiérrez Rondón',        'EMPLEADO', 'agutierrez',401004, 'Digital Strategy & Business'),
-(7, 'Miguel Ángel Ospina Bedoya',        'EMPLEADO', 'mospina',   401005, 'Digital Strategy & Business'),
-(8, 'Laura Daniela Suárez Castillo',     'EMPLEADO', 'lsuarez',   401006, 'Infrastructure & Cloud'),
-(9, 'Ricardo Iván Morales Pedraza',      'EMPLEADO', 'rmorales',  401007, 'Infrastructure & Cloud'),
-(10, 'Jorge Eliecer Torres Morales',      'PEOPLE', 'jtorres',  401008, 'Infrastructure & Cloud');
+INSERT INTO usuarios (id, nombre, rol, usuario, numero_empleado, unidad_negocio, password) VALUES
+(1, 'Nidia Patricia Vivas Rocha',        'LIDER',    'nvivas',    301001, 'Application Services (AS)', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(2, 'Sergio Alejandro Torres Mejía',     'LIDER',    'storres',   301002, 'Digital Strategy & Business', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(3, 'Carlos Andrés Medina Vargas',       'EMPLEADO', 'cmedina',   401001, 'Application Services (AS)', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(4, 'Diana Carolina Herrera Montoya',    'EMPLEADO', 'dherrera',  401002, 'Application Services (AS)', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(5, 'Jhon Fredy Parra López',            'EMPLEADO', 'jparra',    401003, 'Application Services (AS)', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(6, 'Ana María Gutiérrez Rondón',        'EMPLEADO', 'agutierrez',401004, 'Digital Strategy & Business', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(7, 'Miguel Ángel Ospina Bedoya',        'EMPLEADO', 'mospina',   401005, 'Digital Strategy & Business', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(8, 'Laura Daniela Suárez Castillo',     'EMPLEADO', 'lsuarez',   401006, 'Infrastructure & Cloud', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(9, 'Ricardo Iván Morales Pedraza',      'EMPLEADO', 'rmorales',  401007, 'Infrastructure & Cloud', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8='),
+(10, 'Jorge Eliecer Torres Morales',     'PEOPLE',   'jtorres',   401008, 'Infrastructure & Cloud', '6fVhmdqrgGs8gGZrkbps/b7nl8eTpfbG6YpDLLbD8M8=');
 
 -- ----------------------------------------------------------------
 -- VACACIONES

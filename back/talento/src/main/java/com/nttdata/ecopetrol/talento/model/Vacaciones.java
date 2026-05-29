@@ -1,5 +1,6 @@
 package com.nttdata.ecopetrol.talento.model;
 
+import com.nttdata.ecopetrol.talento.enums.Estado;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -20,7 +21,11 @@ public class Vacaciones {
     private Date fechaFin;
     private Integer totalDias;
     private String comentario;
-    private String estado;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Estado estado;
 
     @ManyToOne
     @JoinColumn(name = "lider_id")
@@ -60,11 +65,11 @@ public class Vacaciones {
     public String getComentario() { return comentario; }
     public void setComentario(String comentario) { this.comentario = comentario; }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
