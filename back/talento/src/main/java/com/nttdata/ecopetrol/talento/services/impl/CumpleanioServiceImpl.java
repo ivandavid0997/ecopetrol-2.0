@@ -213,6 +213,7 @@ public class CumpleanioServiceImpl implements CumpleanioService {
 
     private CumpleanioRsDTO mapToDto(DiaCumpleanio dia) {
         return CumpleanioRsDTO.builder()
+                .id(dia.getId())
                 .numeroEmpleado(dia.getNumeroEmpleado())
                 .nombreEmpleado(dia.getNombreEmpleado())
                 .unidadNegocio(dia.getUnidadNegocio())

@@ -14,6 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class VacacionesRsDTO {
 
+    private Long id;
     private String numeroEmpleado;
     private String nombreEmpleado;
     private String unidadNegocio;

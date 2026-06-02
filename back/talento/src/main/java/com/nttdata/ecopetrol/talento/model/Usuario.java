@@ -2,6 +2,7 @@ package com.nttdata.ecopetrol.talento.model;
 
 import com.nttdata.ecopetrol.talento.enums.Rol;
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +27,7 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+    @ColumnDefault("0")
     private int intentosFallidos;
 
     private LocalDateTime bloqueadoHasta;
@@ -35,6 +37,7 @@ public class Usuario {
      * Nunca usar DELETE físico; usar setActivo(false).
      */
     @Column(nullable = false)
+    @ColumnDefault("1")
     private boolean activo = true;
 
     // Getters y setters omitiendo validación por malas prácticas intencionales

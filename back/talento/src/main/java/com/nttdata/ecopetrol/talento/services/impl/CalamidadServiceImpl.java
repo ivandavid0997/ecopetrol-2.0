@@ -54,13 +54,12 @@ public class CalamidadServiceImpl implements CalamidadService {
             cal.setNombreEmpleado(dto.getNombreEmpleado());
             cal.setUnidadNegocio(dto.getUnidadNegocio());
             cal.setDescripcion(dto.getDescripcion());
-            cal.setFechaInicio(dto.getFechaInicio());
-            cal.setFechaFin(dto.getFechaFin());
+            cal.setFechaInicio(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaInicio()));
+            cal.setFechaFin(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaFin()));
             cal.setComentario(dto.getComentario());
             cal.setTotalDias(dto.getTotalDias());
             cal.setEstado(Estado.PENDIENTE);
             cal.setArchivoAdjunto(dto.getArchivoAdjunto());
-            cal.setFechaCreacion(new Date());
             if (dto.getLider() != null) {
                 cal.setLider(usuarioRepository.findById(dto.getLider()).orElse(null));
             }

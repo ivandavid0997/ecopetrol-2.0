@@ -1,42 +1,46 @@
+import { TipoPermiso } from '../app/core/models';
+
+/**
+ * Config de entorno. `useMock: true` usa datos en memoria (demo sin backend).
+ * `useMock: false` consume el backend real vía el proxy (/autenticacion, /vacaciones, ...).
+ */
 export const environment = {
-  production: false,
   useMock: false,
-  apiUrl: '',
-  mockUrl: {
-    login: 'assets/mocks/login-mock.json',
-    vacation: 'assets/mocks/vacation-mock.json',
-    birthday: 'assets/mocks/birthday-mock.json',
-    disabilities: 'assets/mocks/disabilities-mock.json',
-    calamity: 'assets/mocks/calamity-mock.json',
-    birthdayLeader: 'assets/mocks/birthday-leader-mock.json',
-    calamityLeader: 'assets/mocks/calamity-leader-mock.json',
-    vacationLeader: 'assets/mocks/vacation-leader-mock.json',
-    disabilitiesLeader: 'assets/mocks/disabilities-leader-mock.json'
+  api: {
+    login: '/autenticacion/login',
+    cierreMes: '/administracion/cierreMes',
+    usuarios: '/usuario/listaUsuarios',
   },
-  endpoint: {
-    login: '/talento/login',
-    vacation: '/talento/listarVacaciones',
-    createVacation: '/talento/crearVacaciones',
-    birthday: '/talento/listarDiasCumpleanios',
-    createBirthday: '/talento/crearDiaCumpleanio',
-    disabilities: '/talento/listarIncapacidades',
-    createDisability: '/talento/crearIncapacidad',
-    calamity: '/talento/listarCalamidades',
-    createCalamity: '/talento/crearCalamidad',
-    vacationLeader: '/talento/listarVacacionesPendientes',
-    approveVacation: '/talento/aprobarVacaciones',
-    rejectVacation: '/talento/rechazarVacaciones',
-    birthdayLeader: '/talento/listarDiasCumpleaniosPendientes',
-    approveBirthday: '/talento/aprobarDiaCumpleanio',
-    rejectBirthday: '/talento/rechazarDiaCumpleanio',
-    disabilitiesLeader: '/talento/listarIncapacidadesPendientes',
-    approveDisability: '/talento/aprobarIncapacidad',
-    rejectDisability: '/talento/rechazarIncapacidad',
-    calamityLeader: '/talento/listarCalamidadesPendientes',
-    approveCalamity: '/talento/aprobarCalamidad',
-    rejectCalamity: '/talento/rechazarCalamidad',
-    closeMonth: '/talento/cierreMes',
-    monthClosureStatus: '/talento/cierreMes',
-    peopleReport: '/talento/consolidadoSolicitudes'
-  }
+};
+
+/** Endpoints por tipo de permiso (feature-prefixed en el backend). */
+export const API_TIPO: Record<TipoPermiso, { listar: string; crear: string; aprobar: string; rechazar: string; borrar: string }> = {
+  vacaciones: {
+    listar: '/vacaciones/listarVacaciones',
+    crear: '/vacaciones/crearVacaciones',
+    aprobar: '/vacaciones/aprobarVacaciones',
+    rechazar: '/vacaciones/rechazarVacaciones',
+    borrar: '/vacaciones/borrarVacaciones',
+  },
+  incapacidad: {
+    listar: '/incapacidad/listarIncapacidades',
+    crear: '/incapacidad/crearIncapacidad',
+    aprobar: '/incapacidad/aprobarIncapacidad',
+    rechazar: '/incapacidad/rechazarIncapacidad',
+    borrar: '/incapacidad/borrarIncapacidad',
+  },
+  calamidad: {
+    listar: '/calamidad/listarCalamidades',
+    crear: '/calamidad/crearCalamidad',
+    aprobar: '/calamidad/aprobarCalamidad',
+    rechazar: '/calamidad/rechazarCalamidad',
+    borrar: '/calamidad/borrarCalamidad',
+  },
+  cumpleanos: {
+    listar: '/cumpleanio/listarDiasCumpleanios',
+    crear: '/cumpleanio/crearDiaCumpleanio',
+    aprobar: '/cumpleanio/aprobarDiaCumpleanio',
+    rechazar: '/cumpleanio/rechazarDiaCumpleanio',
+    borrar: '/cumpleanio/borrarDiaCumpleanio',
+  },
 };
