@@ -6,10 +6,18 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
-// Proxy de API al backend (talento)
+// Proxy de API al backend (endpoints por feature)
 app.use(
   createProxyMiddleware({
-    pathFilter: '/talento/**',
+    pathFilter: [
+      '/autenticacion/**',
+      '/usuario/**',
+      '/vacaciones/**',
+      '/incapacidad/**',
+      '/cumpleanio/**',
+      '/calamidad/**',
+      '/administracion/**',
+    ],
     target: BACKEND_URL,
     changeOrigin: true,
     on: {

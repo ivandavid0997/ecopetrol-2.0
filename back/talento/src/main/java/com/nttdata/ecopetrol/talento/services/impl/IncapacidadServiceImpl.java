@@ -59,12 +59,11 @@ public class IncapacidadServiceImpl implements IncapacidadService {
             inc.setTipoIncapacidad(dto.getTipoIncapacidad());
             inc.setEntidadSalud(dto.getEntidadSalud());
             inc.setCategoria(dto.getCategoria());
-            inc.setFechaInicio(dto.getFechaInicio());
-            inc.setFechaFin(dto.getFechaFin());
+            inc.setFechaInicio(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaInicio()));
+            inc.setFechaFin(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaFin()));
             inc.setTotalDias(dto.getTotalDias());
             inc.setDiagnostico(dto.getDiagnostico());
             inc.setArchivoAdjunto(dto.getArchivoAdjunto());
-            inc.setFechaCreacion(new Date());
             inc.setEstado(Estado.PENDIENTE);
 
             incapacidadRepository.save(inc);
@@ -234,8 +233,8 @@ public class IncapacidadServiceImpl implements IncapacidadService {
                 .numeroEmpleado(inc.getNumeroEmpleado())
                 .nombreEmpleado(inc.getNombreEmpleado())
                 .unidadNegocio(inc.getUnidadNegocio())
-                .fechaInicio(inc.getFechaInicio())
-                .fechaFin(inc.getFechaFin())
+                .fechaInicio(com.nttdata.ecopetrol.talento.utils.DateMapper.toDate(inc.getFechaInicio()))
+                .fechaFin(com.nttdata.ecopetrol.talento.utils.DateMapper.toDate(inc.getFechaFin()))
                 .totalDias(inc.getTotalDias())
                 .estado(Estado.valueOf(inc.getEstado().name()))
                 .build();

@@ -181,6 +181,10 @@ export class PortalEmpleado {
   private readonly valores = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
   protected readonly totalDias = computed(() => diasEntre(this.valores().fechaInicio ?? '', this.valores().fechaFin ?? ''));
 
+  constructor() {
+    this.store.cargar();
+  }
+
   protected meta(tipo: TipoPermiso) {
     return TIPOS_META[tipo];
   }
@@ -201,25 +205,29 @@ export class PortalEmpleado {
     const tipo = this.tipo();
     if (!tipo) return;
     const v = this.form.getRawValue();
-    this.store.crearSolicitud({
-      tipo,
-      numeroEmpleado: v.numeroEmpleado || 'EMP000',
-      nombreEmpleado: v.nombreEmpleado,
-      unidadNegocio: v.unidadNegocio,
-      lider: v.lider,
-      fechaInicio: v.fechaInicio,
-      fechaFin: v.fechaFin,
-      totalDias: this.totalDias(),
-      descripcion: tipo === 'incapacidad' ? v.diagnostico : v.descripcion,
-      tipoIncapacidad: v.tipoIncapacidad,
-      entidadSalud: v.entidadSalud,
-      categoria: v.categoria,
-      diagnostico: v.diagnostico,
-      archivoAdjunto: this.archivo(),
-    });
-    this.toast.success(`Solicitud de ${TIPOS_META[tipo].label} enviada`);
-    this.form.reset({ nombreEmpleado: this.session.usuario()?.nombre ?? '' });
-    this.archivo.set('');
-    this.tipo.set(null);
+    this.store
+      .crearSolicitud(tipo, {
+        numeroEmpleado: v.numeroEmpleado || this.session.usuario()?.numeroEmpleado || 'EMP000',
+        nombreEmpleado: v.nombreEmpleado,
+        unidadNegocio: v.unidadNegocio,
+        fechaInicio: v.fechaInicio,
+        fechaFin: v.fechaFin,
+        totalDias: this.totalDias(),
+        descripcion: v.descripcion,
+        tipoIncapacidad: v.tipoIncapacidad,
+        entidadSalud: v.entidadSalud,
+        categoria: v.categoria,
+        diagnostico: v.diagnostico,
+        archivoAdjunto: this.archivo(),
+      })
+      .subscribe({
+        next: () => {
+          this.toast.success(`Solicitud de ${TIPOS_META[tipo].label} enviada`);
+          this.form.reset({ nombreEmpleado: this.session.usuario()?.nombre ?? '' });
+          this.archivo.set('');
+          this.tipo.set(null);
+        },
+        error: () => this.toast.error('No se pudo enviar la solicitud'),
+      });
   }
 }

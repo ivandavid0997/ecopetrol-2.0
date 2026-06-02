@@ -22,6 +22,8 @@ import java.util.Date;
  */
 public interface VacacionesListView {
 
+    Long getId();
+
     String getNumeroEmpleado();
 
     String getNombreEmpleado();

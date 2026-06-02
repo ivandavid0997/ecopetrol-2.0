@@ -11,6 +11,7 @@ export interface Usuario {
   nombre: string;
   correo: string;
   iniciales: string;
+  numeroEmpleado?: string;
 }
 
 export interface Solicitud {

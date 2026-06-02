@@ -108,6 +108,10 @@ export class PanelAprobaciones {
     { valor: 'rechazado', label: 'Rechazadas' },
   ];
 
+  constructor() {
+    this.store.cargar();
+  }
+
   protected readonly kpis = computed(() => {
     const s = this.stats();
     return [
@@ -132,11 +136,22 @@ export class PanelAprobaciones {
   }
 
   protected aprobar(s: Solicitud): void {
-    this.store.aprobar(s.id);
-    this.toast.success(`Solicitud de ${s.nombreEmpleado} aprobada`);
+    this.store.aprobar(s).subscribe({
+      next: () => this.toast.success(`Solicitud de ${s.nombreEmpleado} aprobada`),
+      error: (e) => this.toast.error(this.errorMsg(e) ?? `No se pudo aprobar la solicitud de ${s.nombreEmpleado}`),
+    });
   }
   protected rechazar(s: Solicitud): void {
-    this.store.rechazar(s.id);
-    this.toast.show(`Solicitud de ${s.nombreEmpleado} rechazada`, 'error');
+    this.store.rechazar(s).subscribe({
+      next: () => this.toast.show(`Solicitud de ${s.nombreEmpleado} rechazada`, 'error'),
+      error: (e) => this.toast.error(this.errorMsg(e) ?? `No se pudo rechazar la solicitud de ${s.nombreEmpleado}`),
+    });
+  }
+
+  private errorMsg(e: unknown): string | null {
+    const err = (e as { error?: unknown })?.error;
+    if (typeof err === 'string' && err.trim()) return err;
+    if (err && typeof err === 'object' && 'error' in err) return String((err as { error: unknown }).error);
+    return null;
   }
 }

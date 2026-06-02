@@ -1,4 +1,4 @@
-name: Deploy Backend - Spring Boot (ACI)
+name: Deploy Backend - Spring Boot (ACI · entorno 2)
 
 on:
   push:
@@ -9,12 +9,16 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_LOGIN_SERVER: acrecopetrolntt.azurecr.io
+  ACR_LOGIN_SERVER: acrecopetrolntt2.azurecr.io
   IMAGE_NAME: talento-back
+  ACI_NAME: aci-centralecopetrol2
+  ACI_RG: rg-central-solucion-talento2
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      HAS_AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS != '' }}
 
     steps:
       - name: Checkout
@@ -33,12 +37,12 @@ jobs:
         working-directory: back/talento
         run: ./gradlew clean bootJar --no-daemon
 
-      - name: Log in to ACR
+      - name: Log in to ACR (entorno 2)
         uses: docker/login-action@v3
         with:
           registry: ${{ env.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          username: ${{ secrets.ACR2_USERNAME }}
+          password: ${{ secrets.ACR2_PASSWORD }}
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -50,6 +54,22 @@ jobs:
             ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Notice — restart ACI to pick up new image
+      - name: Log in to Azure
+        if: env.HAS_AZURE_CREDS == 'true'
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Restart ACI to pick up new image
+        if: env.HAS_AZURE_CREDS == 'true'
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az container restart --name "${ACI_NAME}" --resource-group "${ACI_RG}"
+            echo "ACI ${ACI_NAME} reiniciado — ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest (commit ${{ github.sha }})"
+
+      - name: Notice — Azure redeploy skipped
+        if: env.HAS_AZURE_CREDS != 'true'
         run: |
-          echo "::notice title=Manual step::Run 'az container restart --name aci-central-ecopetrol --resource-group rg-central-solucion-talento' to deploy the new image."
+          echo "::warning title=Redeploy skipped::Imagen subida a ACR2 pero el ACI no se reinició: falta el secret AZURE_CREDENTIALS. Agrégalo para habilitar el auto-redeploy."

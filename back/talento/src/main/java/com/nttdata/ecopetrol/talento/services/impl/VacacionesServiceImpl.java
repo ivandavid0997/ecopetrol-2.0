@@ -139,11 +139,12 @@ public class VacacionesServiceImpl implements VacacionesService {
         Long liderId = vac.getLider() != null ? vac.getLider().getId() : null;
         String liderNombre = vac.getLider() != null ? vac.getLider().getNombre() : null;
         return VacacionesRsDTO.builder()
+                .id(vac.getId())
                 .numeroEmpleado(vac.getNumeroEmpleado())
                 .nombreEmpleado(vac.getNombreEmpleado())
                 .unidadNegocio(vac.getUnidadNegocio())
-                .fechaInicio(vac.getFechaInicio())
-                .fechaFin(vac.getFechaFin())
+                .fechaInicio(com.nttdata.ecopetrol.talento.utils.DateMapper.toDate(vac.getFechaInicio()))
+                .fechaFin(com.nttdata.ecopetrol.talento.utils.DateMapper.toDate(vac.getFechaFin()))
                 .totalDias(vac.getTotalDias())
                 .estado(vac.getEstado() != null ? Estado.valueOf(vac.getEstado().name()) : null)
                 .liderId(liderId)
@@ -160,6 +161,7 @@ public class VacacionesServiceImpl implements VacacionesService {
         Long liderId = view.getLider() != null ? view.getLider().getId() : null;
         String liderNombre = view.getLider() != null ? view.getLider().getNombre() : null;
         return VacacionesRsDTO.builder()
+                .id(view.getId())
                 .numeroEmpleado(view.getNumeroEmpleado())
                 .nombreEmpleado(view.getNombreEmpleado())
                 .unidadNegocio(view.getUnidadNegocio())
@@ -191,12 +193,11 @@ public class VacacionesServiceImpl implements VacacionesService {
             vac.setNumeroEmpleado(dto.getNumeroEmpleado());
             vac.setNombreEmpleado(dto.getNombreEmpleado());
             vac.setUnidadNegocio(dto.getUnidadNegocio());
-            vac.setFechaInicio(dto.getFechaInicio());
-            vac.setFechaFin(dto.getFechaFin());
+            vac.setFechaInicio(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaInicio()));
+            vac.setFechaFin(com.nttdata.ecopetrol.talento.utils.DateMapper.toLocalDate(dto.getFechaFin()));
             vac.setComentario(dto.getComentario());
             vac.setTotalDias(dto.getTotalDias());
             vac.setEstado(Estado.PENDIENTE);
-            vac.setFechaCreacion(new Date());
             if (dto.getLiderId() != null) {
                 vac.setLider(usuarioRepository.findById(dto.getLiderId()).orElse(null));
             }

@@ -1,7 +1,9 @@
 {
-  "/talento": {
-    "target": "https://app-central-ecopetrol-geeqdnayfth9d7cx.centralus-01.azurewebsites.net",
-    "secure": true,
-    "changeOrigin": true
-  }
+  "/autenticacion": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/usuario": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/vacaciones": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/incapacidad": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/cumpleanio": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/calamidad": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true },
+  "/administracion": { "target": "http://localhost:8080", "secure": false, "changeOrigin": true }
 }

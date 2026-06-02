@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SessionService } from '../../core/session.service';
+import { ToastService } from '../../core/toast.service';
 import { Icon } from '../../shared/icon';
 import { Logo } from '../../shared/logo';
 
@@ -45,9 +46,11 @@ import { Logo } from '../../shared/logo';
             </div>
           </div>
 
-          <button type="submit" class="btn-primary btn-block mt-2" [disabled]="form.invalid">
-            Continuar
-            <app-icon name="arrow-right" [size]="18" />
+          <button type="submit" class="btn-primary btn-block mt-2" [disabled]="form.invalid || cargando()">
+            {{ cargando() ? 'Ingresando…' : 'Continuar' }}
+            @if (!cargando()) {
+              <app-icon name="arrow-right" [size]="18" />
+            }
           </button>
         </form>
       </div>
@@ -58,16 +61,28 @@ export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   protected readonly form = this.fb.nonNullable.group({
     usuario: ['', Validators.required],
     contrasena: ['', Validators.required],
   });
 
+  protected readonly cargando = signal(false);
+
   protected continuar(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.cargando()) return;
     const { usuario, contrasena } = this.form.getRawValue();
-    this.session.login(usuario, contrasena);
-    this.router.navigate(['/rol']);
+    this.cargando.set(true);
+    this.session.login(usuario, contrasena).subscribe({
+      next: () => {
+        this.cargando.set(false);
+        this.router.navigate(['/rol']);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.toast.error('Usuario o contraseña incorrectos');
+      },
+    });
   }
 }

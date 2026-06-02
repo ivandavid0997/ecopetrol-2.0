@@ -108,6 +108,10 @@ export class ReportesPeople {
   private readonly stats = this.store.statsReporte;
   protected readonly query = signal('');
 
+  constructor() {
+    this.store.cargar();
+  }
+
   protected readonly kpis = computed(() => {
     const s = this.stats();
     return [
@@ -146,6 +150,9 @@ export class ReportesPeople {
   }
 
   protected cierreMes(): void {
-    this.toast.success('Cierre de mes ejecutado correctamente');
+    this.store.cierreMes().subscribe({
+      next: () => this.toast.success('Cierre de mes ejecutado correctamente'),
+      error: () => this.toast.error('No se pudo ejecutar el cierre de mes'),
+    });
   }
 }

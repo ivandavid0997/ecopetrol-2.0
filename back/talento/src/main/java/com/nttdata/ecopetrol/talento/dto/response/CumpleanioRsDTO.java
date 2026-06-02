@@ -8,6 +8,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CumpleanioRsDTO {
+    private Long id;
     private String numeroEmpleado;
     private String nombreEmpleado;
     private String unidadNegocio;

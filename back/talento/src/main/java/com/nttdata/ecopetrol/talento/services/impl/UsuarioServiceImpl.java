@@ -32,7 +32,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             user.setNombre(dto.getNombre());
             user.setUsuario(dto.getUsuario());
             user.setRol(dto.getRol());
-            user.setNumeroEmpleado(dto.getNumeroEmpleado());
+            user.setNumeroEmpleado(dto.getNumeroEmpleado() == null ? null : String.valueOf(dto.getNumeroEmpleado()));
             user.setUnidadNegocio(dto.getUnidadNegocio());
             user.setPassword(AesUtil.encrypt(dto.getPassword()));
             user.setIntentosFallidos(0);
@@ -91,7 +91,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .nombre(user.getNombre())
                 .usuario(user.getUsuario())
                 .rol(user.getRol())
-                .numeroEmpleado(user.getNumeroEmpleado())
+                .numeroEmpleado(user.getNumeroEmpleado() == null ? null : Long.valueOf(user.getNumeroEmpleado()))
                 .unidadNegocio(user.getUnidadNegocio())
                 .intentosFallidos(user.getIntentosFallidos())
                 .bloqueadoHasta(user.getBloqueadoHasta())
