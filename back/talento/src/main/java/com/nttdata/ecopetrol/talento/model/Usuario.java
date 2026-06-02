@@ -37,7 +37,7 @@ public class Usuario {
      * Nunca usar DELETE físico; usar setActivo(false).
      */
     @Column(nullable = false)
-    @ColumnDefault("true")
+    @ColumnDefault("1")
     private boolean activo = true;
 
     // Getters y setters omitiendo validación por malas prácticas intencionales
