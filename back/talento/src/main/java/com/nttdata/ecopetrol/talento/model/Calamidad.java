@@ -2,7 +2,8 @@ package com.nttdata.ecopetrol.talento.model;
 
 import com.nttdata.ecopetrol.talento.enums.Estado;
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "calamidades")
@@ -16,8 +17,8 @@ public class Calamidad {
     private String nombreEmpleado;
     private String unidadNegocio;
     private String descripcion;        // Campo libre
-    private Date fechaInicio;          // Sin validación de null o formato
-    private Date fechaFin;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private Integer totalDias;
     private String comentario;
 
@@ -32,13 +33,12 @@ public class Calamidad {
     @JoinColumn(name = "lider_id")
     private Usuario lider;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
-    private Date fechaCreacion;
+    private LocalDateTime fechaCreacion;
 
     @PrePersist
     protected void onCreate() {
-        fechaCreacion = new Date();
+        fechaCreacion = LocalDateTime.now();
     }
 
     // Getters y setters sin validación ni encapsulamiento adecuado
@@ -57,11 +57,11 @@ public class Calamidad {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public Date getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(Date fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
 
-    public Date getFechaFin() { return fechaFin; }
-    public void setFechaFin(Date fechaFin) { this.fechaFin = fechaFin; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
 
     public Integer getTotalDias() { return totalDias; }
     public void setTotalDias(Integer totalDias) { this.totalDias = totalDias; }
@@ -85,13 +85,11 @@ public class Calamidad {
         this.archivoAdjunto = archivoAdjunto;
     }
 
-    public Date getFechaCreacion() {
+    public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+    // setFechaCreacion eliminado: campo de auditoría inmutable (updatable=false + @PrePersist)
 
     public Estado getEstado() {
         return estado;

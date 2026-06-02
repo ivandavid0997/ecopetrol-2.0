@@ -12,7 +12,7 @@ import java.security.Key;
 public class JwtUtil {
 
     // Usa una clave secreta fuerte (32 caracteres mínimo)
-    private final String SECRET_KEY = "cambia_esto_por_una_clave_secreta_segura_de_32+_caracteres";
+    private final String SECRET_KEY = "bS7Gz2HkX3NdP8aQrLvEw5jFu6VmY1Tp";
     private final long EXPIRATION_MS = 6 * 60 * 60 * 1000; // 6 horas
 
     private Key getSigningKey() {

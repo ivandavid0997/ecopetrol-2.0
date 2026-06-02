@@ -4,12 +4,13 @@ import com.nttdata.ecopetrol.talento.model.Calamidad;
 import com.nttdata.ecopetrol.talento.model.DiaCumpleanio;
 import com.nttdata.ecopetrol.talento.model.Incapacidad;
 import com.nttdata.ecopetrol.talento.model.Vacaciones;
+import com.nttdata.ecopetrol.talento.services.ValidacionVacacionesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ValidacionVacacionesServiceImpl {
+public class ValidacionVacacionesServiceImpl implements ValidacionVacacionesService {
 
     private static final Logger logger = LoggerFactory.getLogger(ValidacionVacacionesServiceImpl.class);
 

@@ -2,6 +2,7 @@ package com.nttdata.ecopetrol.talento.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nttdata.ecopetrol.talento.dto.projection.VacacionesListView;
 import com.nttdata.ecopetrol.talento.dto.request.VacacionesRqDTO;
 import com.nttdata.ecopetrol.talento.dto.response.VacacionesRsDTO;
 import com.nttdata.ecopetrol.talento.enums.CodigoError;
@@ -12,6 +13,8 @@ import com.nttdata.ecopetrol.talento.model.Vacaciones;
 import com.nttdata.ecopetrol.talento.repository.UsuarioRepository;
 import com.nttdata.ecopetrol.talento.repository.VacacionesRepository;
 import com.nttdata.ecopetrol.talento.services.AuditoriaService;
+import com.nttdata.ecopetrol.talento.services.NotificacionCorreoService;
+import com.nttdata.ecopetrol.talento.services.ValidacionVacacionesService;
 import com.nttdata.ecopetrol.talento.services.VacacionesService;
 import com.nttdata.ecopetrol.talento.utils.AuditHelper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +40,9 @@ public class VacacionesServiceImpl implements VacacionesService {
 
     private final VacacionesRepository vacacionesRepository;
 
-    private final NotificacionCorreoServiceImpl notificacionCorreoServiceImpl;
+    private final NotificacionCorreoService notificacionCorreoService;
 
-    private final ValidacionVacacionesServiceImpl validacionVacacionesServiceImpl;
+    private final ValidacionVacacionesService validacionVacacionesService;
 
     private final UsuarioRepository usuarioRepository;
 
@@ -46,15 +50,16 @@ public class VacacionesServiceImpl implements VacacionesService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public VacacionesServiceImpl(VacacionesRepository vacacionesRepository, NotificacionCorreoServiceImpl notificacionCorreoServiceImpl, ValidacionVacacionesServiceImpl validacionVacacionesServiceImpl, UsuarioRepository usuarioRepository, AuditoriaService auditoriaService) {
+    public VacacionesServiceImpl(VacacionesRepository vacacionesRepository, NotificacionCorreoService notificacionCorreoService, ValidacionVacacionesService validacionVacacionesService, UsuarioRepository usuarioRepository, AuditoriaService auditoriaService) {
         this.vacacionesRepository = vacacionesRepository;
-        this.notificacionCorreoServiceImpl = notificacionCorreoServiceImpl;
-        this.validacionVacacionesServiceImpl = validacionVacacionesServiceImpl;
+        this.notificacionCorreoService = notificacionCorreoService;
+        this.validacionVacacionesService = validacionVacacionesService;
         this.usuarioRepository = usuarioRepository;
         this.auditoriaService = auditoriaService;
     }
 
-    public ResponseEntity<?> aprobarVacaciones(Long id, String usuarioActual,HttpServletRequest request) {
+    @Transactional
+    public ResponseEntity<?> aprobarVacaciones(Long id, String usuarioActual, HttpServletRequest request) {
         try {
             Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
             if (vac == null) {
@@ -69,7 +74,7 @@ public class VacacionesServiceImpl implements VacacionesService {
 
             logger.info("Validando días disponibles para empleado [numeroEmpleado={}, solicitado={}]",
                     vac.getNumeroEmpleado(), vac.getTotalDias());
-            boolean valido = validacionVacacionesServiceImpl.validarDiasVacacionesDisponibles(vac);
+            boolean valido = validacionVacacionesService.validarDiasVacacionesDisponibles(vac);
             if (!valido) {
                 MDC.put("codigo_error", CodigoError.SIN_DIAS_SUFI.getCodigo());
                 logger.warn("Empleado sin días suficientes para sus vacaciones [numeroEmpleado={}, solicitado={}]",
@@ -98,7 +103,7 @@ public class VacacionesServiceImpl implements VacacionesService {
             logger.info("Vacaciones aprobadas correctamente [vacacionesId={}, numeroEmpleado={}, aprobador={}]",
                     id, vac.getNumeroEmpleado(), usuarioActual);
 
-            notificacionCorreoServiceImpl.enviarCorreo(
+            notificacionCorreoService.enviarCorreo(
                     "juanpablo.guaquetaanzola@emeal.nttdata.com",
                     "Solicitud de Vacaciones Aprobada",
                     "Estimado " + vac.getNombreEmpleado() + ", su solicitud ha sido aprobada."
@@ -123,7 +128,14 @@ public class VacacionesServiceImpl implements VacacionesService {
         }
     }
 
+    /**
+     * Mapper para operaciones que ya tienen la entidad completa cargada
+     * (aprobar, rechazar, crear). Incluye liderId y liderNombre si el lider
+     * ya está inicializado en la entidad.
+     */
     private VacacionesRsDTO mapToDto(Vacaciones vac) {
+        Long liderId = vac.getLider() != null ? vac.getLider().getId() : null;
+        String liderNombre = vac.getLider() != null ? vac.getLider().getNombre() : null;
         return VacacionesRsDTO.builder()
                 .numeroEmpleado(vac.getNumeroEmpleado())
                 .nombreEmpleado(vac.getNombreEmpleado())
@@ -132,17 +144,45 @@ public class VacacionesServiceImpl implements VacacionesService {
                 .fechaFin(vac.getFechaFin())
                 .totalDias(vac.getTotalDias())
                 .estado(vac.getEstado() != null ? Estado.valueOf(vac.getEstado().name()) : null)
+                .liderId(liderId)
+                .liderNombre(liderNombre)
                 .build();
     }
 
+    /**
+     * R-02: Mapper para proyecciones de listado.
+     * Recibe VacacionesListView (proxy generado por Spring Data) y produce el DTO
+     * sin tocar ninguna colección lazy ni columna no proyectada.
+     */
+    private VacacionesRsDTO mapFromProjection(VacacionesListView view) {
+        Long liderId = view.getLider() != null ? view.getLider().getId() : null;
+        String liderNombre = view.getLider() != null ? view.getLider().getNombre() : null;
+        return VacacionesRsDTO.builder()
+                .numeroEmpleado(view.getNumeroEmpleado())
+                .nombreEmpleado(view.getNombreEmpleado())
+                .unidadNegocio(view.getUnidadNegocio())
+                .fechaInicio(view.getFechaInicio())
+                .fechaFin(view.getFechaFin())
+                .totalDias(view.getTotalDias())
+                .estado(view.getEstado())
+                .liderId(liderId)
+                .liderNombre(liderNombre)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
     public ResponseEntity<?> listarVacaciones() {
-        List<Vacaciones> vacaciones = vacacionesRepository.findAll();
-        List<VacacionesRsDTO> dtoList = vacaciones.stream()
-                .map(this::mapToDto)
+        // R-02 fix: proyección anidada — Spring Data genera 1 query que selecciona SOLO
+        // las columnas necesarias (v.cols + u.id + u.nombre), evitando cargar
+        // password, role, activo y otras columnas del usuario lider.
+        List<VacacionesRsDTO> dtoList = vacacionesRepository.findAllProjectedBy()
+                .stream()
+                .map(this::mapFromProjection)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtoList);
     }
 
+    @Transactional
     public ResponseEntity<?> crearVacaciones(VacacionesRqDTO dto) {
         try {
             Vacaciones vac = new Vacaciones();
@@ -169,6 +209,7 @@ public class VacacionesServiceImpl implements VacacionesService {
         }
     }
 
+    @Transactional
     public ResponseEntity<?> borrarVacaciones(Long id) {
         if (!vacacionesRepository.existsById(id)) {
             MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
@@ -182,6 +223,7 @@ public class VacacionesServiceImpl implements VacacionesService {
         return ResponseEntity.noContent().build();
     }
 
+    @Transactional
     public ResponseEntity<?> rechazarVacaciones(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
         if (vac == null) {
@@ -211,7 +253,7 @@ public class VacacionesServiceImpl implements VacacionesService {
                 objectMapper
         );
 
-        notificacionCorreoServiceImpl.enviarCorreo(
+        notificacionCorreoService.enviarCorreo(
                 "juanpablo.guaquetaanzola@emeal.nttdata.com",
                 "Solicitud de Vacaciones Rechazada",
                 "Estimado " + vac.getNombreEmpleado() + ", su solicitud ha sido rechazada."
@@ -220,11 +262,15 @@ public class VacacionesServiceImpl implements VacacionesService {
         return ResponseEntity.ok(mapToDto(vac));
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<?> listarVacacionesPendientes() {
-        List<Vacaciones> todas = vacacionesRepository.findAll();
-        List<VacacionesRsDTO> pendientes = todas.stream()
-                .filter(v -> Estado.PENDIENTE.name().equals(v.getEstado().name()))
-                .map(this::mapToDto)
+        // R-03 fix: filtra en BD (WHERE estado = 'PENDIENTE') en lugar de findAll() + filtro en memoria.
+        // R-02 fix: proyección anidada — selecciona solo v.cols + u.id + u.nombre,
+        // evitando N+1 y columnas innecesarias del usuario lider.
+        List<VacacionesRsDTO> pendientes = vacacionesRepository
+                .findProjectedByEstado(Estado.PENDIENTE)
+                .stream()
+                .map(this::mapFromProjection)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(pendientes);
     }

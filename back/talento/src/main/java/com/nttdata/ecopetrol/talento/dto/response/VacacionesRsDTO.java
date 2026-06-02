@@ -21,4 +21,8 @@ public class VacacionesRsDTO {
     private Date fechaFin;
     private Integer totalDias;
     private Estado estado;
+    /** R-02: ID del líder asignado (null si no tiene líder). */
+    private Long liderId;
+    /** R-02: Nombre del líder asignado (null si no tiene líder). */
+    private String liderNombre;
 }

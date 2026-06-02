@@ -19,7 +19,8 @@ public class Usuario {
     @Column(length = 20)
     private Rol rol;
     private String usuario;
-    private Long numeroEmpleado;
+    @Column(name = "numero_empleado", length = 30)
+    private String numeroEmpleado;
     private String unidadNegocio;
 
     @Column(nullable = false)
@@ -29,6 +30,13 @@ public class Usuario {
 
     private LocalDateTime bloqueadoHasta;
 
+    /**
+     * C-02: Soft delete — false indica usuario eliminado lógicamente.
+     * Nunca usar DELETE físico; usar setActivo(false).
+     */
+    @Column(nullable = false)
+    private boolean activo = true;
+
     // Getters y setters omitiendo validación por malas prácticas intencionales
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -37,11 +45,11 @@ public class Usuario {
     public void setNombre(String nombre) { this.nombre = nombre; }
 
 
-    public Long getNumeroEmpleado() {
+    public String getNumeroEmpleado() {
         return numeroEmpleado;
     }
 
-    public void setNumeroEmpleado(Long numeroEmpleado) {
+    public void setNumeroEmpleado(String numeroEmpleado) {
         this.numeroEmpleado = numeroEmpleado;
     }
 
@@ -77,4 +85,7 @@ public class Usuario {
 
     public LocalDateTime getBloqueadoHasta() { return bloqueadoHasta; }
     public void setBloqueadoHasta(LocalDateTime bloqueadoHasta) { this.bloqueadoHasta = bloqueadoHasta; }
+
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 }

@@ -44,8 +44,6 @@ public class LoginServiceImpl implements LoginService {
 
         String cleanedUsuario = loginRequest.getUsuario().trim().toLowerCase();
         Usuario usuario = usuarioRepository.findByUsuario(cleanedUsuario);
-        String passwordEncriptada = usuario.getPassword();
-        String passwordDesencriptada = AesUtil.decrypt(passwordEncriptada);
 
         if (usuario == null) {
             MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
@@ -54,6 +52,9 @@ public class LoginServiceImpl implements LoginService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Usuario o contraseña incorrectos"));
         }
+
+        String passwordEncriptada = usuario.getPassword();
+        String passwordDesencriptada = AesUtil.decrypt(passwordEncriptada);
 
         // Verifica si está bloqueado
         if (usuario.getBloqueadoHasta() != null && usuario.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
