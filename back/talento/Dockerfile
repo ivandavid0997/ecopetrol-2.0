@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY build/libs/ms-talento-0.0.1-SNAPSHOT.jar app.jar
+COPY build/libs/talento-0.0.1-SNAPSHOT.jar app.jar
 
 RUN mkdir -p /opt/apm && \
     wget -q -O /opt/apm/elastic-apm-agent.jar \
