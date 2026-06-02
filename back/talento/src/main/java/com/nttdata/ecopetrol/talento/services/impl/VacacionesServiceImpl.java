@@ -63,10 +63,12 @@ public class VacacionesServiceImpl implements VacacionesService {
         try {
             Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
             if (vac == null) {
-                MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+                MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
                 logger.error("Vacaciones no encontradas [vacacionesId={}]", id);
                 MDC.remove("codigo_error");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vacación no encontrada.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
+                                "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));
             }
 
             Vacaciones copiaAntes = new Vacaciones();
@@ -203,20 +205,24 @@ public class VacacionesServiceImpl implements VacacionesService {
             logger.info("Solicitud de vacaciones creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(vac));
         } catch (Exception e) {
+            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando solicitud de vacaciones: {}", e.getMessage(), e);
+            MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al crear vacaciones"));
+                    .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
+                            "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
         }
     }
 
     @Transactional
     public ResponseEntity<?> borrarVacaciones(Long id) {
         if (!vacacionesRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
             logger.warn("Intento de borrar registro de vacaciones que no existe: id={}", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Registro de vacaciones no encontrado."));
+                    .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
+                            "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));
         }
         logger.info("Eliminando registro de vacaciones con id {}", id);
         vacacionesRepository.deleteById(id);
@@ -227,11 +233,12 @@ public class VacacionesServiceImpl implements VacacionesService {
     public ResponseEntity<?> rechazarVacaciones(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
         if (vac == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
             logger.warn("Vacaciones no encontradas para rechazo: id={}", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Vacación no encontrada."));
+                    .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
+                            "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));
         }
 
         Vacaciones copiaAntes = new Vacaciones();

@@ -71,9 +71,12 @@ public class IncapacidadServiceImpl implements IncapacidadService {
             logger.info("Solicitud de incapacidad creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(inc));
         } catch (Exception e) {
+            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando incapacidad: {}", e.getMessage(), e);
+            MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al crear incapacidad"));
+                    .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
+                            "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
         }
     }
 
@@ -88,11 +91,12 @@ public class IncapacidadServiceImpl implements IncapacidadService {
     @Override
     public ResponseEntity<?> borrarIncapacidad(Long id) {
         if (!incapacidadRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.warn("Intento de borrar incapacidad inexistente id={}", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Incapacidad no encontrada."));
+                    .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));
         }
         logger.info("Eliminando incapacidad id={}", id);
         incapacidadRepository.deleteById(id);
@@ -103,11 +107,12 @@ public class IncapacidadServiceImpl implements IncapacidadService {
     public ResponseEntity<?> aprobarIncapacidad(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Incapacidad inc = incapacidadRepository.findById(id).orElse(null);
         if (inc == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Incapacidad no encontrada [incapacidadId={}]", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Incapacidad no encontrada."));
+                    .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));
         }
 
         Incapacidad copiaAntes = new Incapacidad();
@@ -174,11 +179,12 @@ public class IncapacidadServiceImpl implements IncapacidadService {
         Incapacidad inc = incapacidadRepository.findById(id).orElse(null);
 
         if (inc == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Incapacidad no encontrada [incapacidadId={}]", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Incapacidad no encontrada."));
+                    .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));
         }
 
         Incapacidad copiaAntes = new Incapacidad();
@@ -235,4 +241,3 @@ public class IncapacidadServiceImpl implements IncapacidadService {
                 .build();
     }
 }
-

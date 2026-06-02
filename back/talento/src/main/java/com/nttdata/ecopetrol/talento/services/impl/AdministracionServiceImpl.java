@@ -1,5 +1,6 @@
 package com.nttdata.ecopetrol.talento.services.impl;
 
+import com.nttdata.ecopetrol.talento.config.NominaApiClient;
 import com.nttdata.ecopetrol.talento.dto.request.CierreMesResultadoDTO;
 import com.nttdata.ecopetrol.talento.model.*;
 import com.nttdata.ecopetrol.talento.repository.*;
@@ -22,13 +23,15 @@ public class AdministracionServiceImpl implements AdministracionService {
     private final IncapacidadRepository incapacidadRepository;
     private final CalamidadRepository calamidadRepository;
     private final DiaCumpleanioRepository diaCumpleanioRepository;
+    private final NominaApiClient nominaApiClient;
 
-    public AdministracionServiceImpl(SolicitudUnificadaRepository solicitudUnificadaRepository, VacacionesRepository vacacionesRepository, IncapacidadRepository incapacidadRepository, CalamidadRepository calamidadRepository, DiaCumpleanioRepository diaCumpleanioRepository) {
+    public AdministracionServiceImpl(SolicitudUnificadaRepository solicitudUnificadaRepository, VacacionesRepository vacacionesRepository, IncapacidadRepository incapacidadRepository, CalamidadRepository calamidadRepository, DiaCumpleanioRepository diaCumpleanioRepository, NominaApiClient nominaApiClient) {
         this.solicitudUnificadaRepository = solicitudUnificadaRepository;
         this.vacacionesRepository = vacacionesRepository;
         this.incapacidadRepository = incapacidadRepository;
         this.calamidadRepository = calamidadRepository;
         this.diaCumpleanioRepository = diaCumpleanioRepository;
+        this.nominaApiClient = nominaApiClient;
     }
 
     @Override
@@ -43,53 +46,31 @@ public class AdministracionServiceImpl implements AdministracionService {
 
         List<CierreMesResultadoDTO> resultados = new ArrayList<>();
 
-        List<Vacaciones> vacacionesAprobadas = vacacionesRepository.findAll()
-                .stream().filter(v -> "APROBADA".equalsIgnoreCase(String.valueOf(v.getEstado()))).toList();
-        for (Vacaciones v : vacacionesAprobadas) {
-            resultados.add(simularEnvioNomina("VACACIONES", v.getId(), v.getNombreEmpleado()));
-        }
+        vacacionesRepository.findAll()
+                .stream().filter(v -> "APROBADA".equalsIgnoreCase(String.valueOf(v.getEstado())))
+                .forEach(v -> {
+                    resultados.add(nominaApiClient.enviarCierreMes("VACACIONES", v.getId(), v.getNombreEmpleado()));
+                });
 
-        List<Incapacidad> incapacidadAprobadas = incapacidadRepository.findAll()
-                .stream().filter(i -> "APROBADA".equalsIgnoreCase(String.valueOf(i.getEstado()))).toList();
-        for (Incapacidad i : incapacidadAprobadas) {
-            resultados.add(simularEnvioNomina("INCAPACIDAD", i.getId(), i.getNombreEmpleado()));
-        }
+        incapacidadRepository.findAll()
+                .stream().filter(i -> "APROBADA".equalsIgnoreCase(String.valueOf(i.getEstado())))
+                .forEach(i -> {
+                    resultados.add(nominaApiClient.enviarCierreMes("INCAPACIDAD", i.getId(), i.getNombreEmpleado()));
+                });
 
-        List<Calamidad> calamidadAprobadas = calamidadRepository.findAll()
-                .stream().filter(c -> "APROBADA".equalsIgnoreCase(String.valueOf(c.getEstado()))).toList();
-        for (Calamidad c : calamidadAprobadas) {
-            resultados.add(simularEnvioNomina("CALAMIDAD", c.getId(), c.getNombreEmpleado()));
-        }
+        calamidadRepository.findAll()
+                .stream().filter(c -> "APROBADA".equalsIgnoreCase(String.valueOf(c.getEstado())))
+                .forEach(c -> {
+                    resultados.add(nominaApiClient.enviarCierreMes("CALAMIDAD", c.getId(), c.getNombreEmpleado()));
+                });
 
-        List<DiaCumpleanio> cumpleAprobados = diaCumpleanioRepository.findAll()
-                .stream().filter(d -> "APROBADA".equalsIgnoreCase(String.valueOf(d.getEstado()))).toList();
-        for (DiaCumpleanio d : cumpleAprobados) {
-            resultados.add(simularEnvioNomina("DIA_CUMPLEANIO", d.getId(), d.getNombreEmpleado()));
-        }
+        diaCumpleanioRepository.findAll()
+                .stream().filter(d -> "APROBADA".equalsIgnoreCase(String.valueOf(d.getEstado())))
+                .forEach(d -> {
+                    resultados.add(nominaApiClient.enviarCierreMes("DIA_CUMPLEANIO", d.getId(), d.getNombreEmpleado()));
+                });
 
         return resultados;
-    }
-
-    private CierreMesResultadoDTO simularEnvioNomina(String tipo, Long id, String nombreEmpleado) {
-        Random random = new Random();
-        boolean exito = random.nextBoolean();
-
-        CierreMesResultadoDTO dto = new CierreMesResultadoDTO();
-        dto.setTipoSolicitud(tipo);
-        dto.setId(id);
-        dto.setNombreEmpleado(nombreEmpleado);
-
-            if (exito) {
-                dto.setEstadoEnvio("EXITOSO");
-                dto.setMensaje("Enviado correctamente a nómina");
-                logger.info("Solicitud {} ID {} enviada a nómina correctamente", tipo, id);
-            } else {
-                dto.setEstadoEnvio("FALLIDO");
-                dto.setMensaje("Error al enviar solicitud al sistema de nómina (simulado). ");
-                logger.warn("Solicitud {} ID {} falló en envío a nómina (mock)", tipo, id);
-            }
-
-        return dto;
     }
 }
 

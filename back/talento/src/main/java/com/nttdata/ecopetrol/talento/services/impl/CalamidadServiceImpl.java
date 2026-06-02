@@ -69,9 +69,12 @@ public class CalamidadServiceImpl implements CalamidadService {
             logger.info("Calamidad creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(cal));
         } catch (Exception e) {
+            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando calamidad: {}", e.getMessage(), e);
+            MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al crear calamidad"));
+                    .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
+                            "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
         }
     }
 
@@ -86,11 +89,12 @@ public class CalamidadServiceImpl implements CalamidadService {
     @Override
     public ResponseEntity<?> borrarCalamidad(Long id) {
         if (!calamidadRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
             logger.warn("Intento de borrar calamidad inexistente id={}", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Calamidad no encontrada."));
+                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
         }
         logger.info("Eliminando calamidad id={}", id);
         calamidadRepository.deleteById(id);
@@ -101,11 +105,12 @@ public class CalamidadServiceImpl implements CalamidadService {
     public ResponseEntity<?> aprobarCalamidad(Long id, String usuarioActual,HttpServletRequest request) throws JsonProcessingException {
         Calamidad cal = calamidadRepository.findById(id).orElse(null);
         if (cal == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Calamidad no encontrada [calamidadId={}]", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Calamidad no encontrada."));
+                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
         }
 
         Calamidad copiaAntes = new Calamidad();
@@ -170,11 +175,12 @@ public class CalamidadServiceImpl implements CalamidadService {
     public ResponseEntity<?> rechazarCalamidad(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Calamidad cal = calamidadRepository.findById(id).orElse(null);
         if (cal == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Calamidad no encontrada [calamidadId={}]", id);
             MDC.remove("codigo_error");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Calamidad no encontrada."));
+                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
+                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
         }
 
         Calamidad copiaAntes = new Calamidad();

@@ -27,6 +27,26 @@ public enum CodigoError {
             "TLNT-011",
             "Intentos de login excedidos",
             "Espere unos minutos e intente nuevamente."
+    ),
+    CALAMIDAD_NO_ENCONTRADA(
+            "TLNT-012",
+            "Calamidad no encontrada",
+            "Verifique el identificador de la calamidad."
+    ),
+    INCAPACIDAD_NO_ENCONTRADA(
+            "TLNT-013",
+            "Incapacidad no encontrada",
+            "Verifique el identificador de la incapacidad."
+    ),
+    VACACIONES_NO_ENCONTRADAS(
+            "TLNT-014",
+            "Vacaciones no encontradas",
+            "Verifique el identificador del registro de vacaciones."
+    ),
+    ERROR_CREAR_SOLICITUD(
+            "TLNT-015",
+            "Error al crear la solicitud",
+            "Revise los datos enviados e intente nuevamente."
     );
 
 
