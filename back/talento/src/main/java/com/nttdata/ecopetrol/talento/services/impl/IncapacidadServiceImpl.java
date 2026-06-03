@@ -70,9 +70,9 @@ public class IncapacidadServiceImpl implements IncapacidadService {
             logger.info("Solicitud de incapacidad creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(inc));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
+            MDC.put("error_code", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando incapacidad: {}", e.getMessage(), e);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
                             "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
@@ -90,9 +90,9 @@ public class IncapacidadServiceImpl implements IncapacidadService {
     @Override
     public ResponseEntity<?> borrarIncapacidad(Long id) {
         if (!incapacidadRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
+            MDC.put("error_code", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.warn("Intento de borrar incapacidad inexistente id={}", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
                             "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));
@@ -106,9 +106,9 @@ public class IncapacidadServiceImpl implements IncapacidadService {
     public ResponseEntity<?> aprobarIncapacidad(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Incapacidad inc = incapacidadRepository.findById(id).orElse(null);
         if (inc == null) {
-            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
+            MDC.put("error_code", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Incapacidad no encontrada [incapacidadId={}]", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
                             "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));
@@ -122,24 +122,24 @@ public class IncapacidadServiceImpl implements IncapacidadService {
                     inc.getNumeroEmpleado(), inc.getTotalDias());
             boolean valido = validacionVacacionesServiceImpl.validarDiasIncapacidadDisponibles(inc);
             if (!valido) {
-                MDC.put("codigo_error", CodigoError.SIN_DIAS_SUFI.getCodigo());
+                MDC.put("error_code", CodigoError.SIN_DIAS_SUFI.getCodigo());
                 logger.warn("Empleado sin días suficientes para incapacidad [numeroEmpleado={}, solicitado={}]",
                         inc.getNumeroEmpleado(), inc.getTotalDias());
-                MDC.remove("codigo_error");
+                MDC.remove("error_code");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(Map.of("error", "El empleado no tiene suficientes días de incapacidad disponibles."));
             }
         } catch (InterruptedException e) {
-            MDC.put("codigo_error", CodigoError.VALIDACION_INTERRUP.getCodigo());
+            MDC.put("error_code", CodigoError.VALIDACION_INTERRUP.getCodigo());
             logger.error("Validación interrumpida para incapacidad [incapacidadId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al validar días disponibles (interrumpido)."));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_VALIDACION.getCodigo());
+            MDC.put("error_code", CodigoError.ERROR_VALIDACION.getCodigo());
             logger.error("Error inesperado al validar incapacidad [incapacidadId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error inesperado de validación: " + e.getMessage()));
         }
@@ -178,9 +178,9 @@ public class IncapacidadServiceImpl implements IncapacidadService {
         Incapacidad inc = incapacidadRepository.findById(id).orElse(null);
 
         if (inc == null) {
-            MDC.put("codigo_error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
+            MDC.put("error_code", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getCodigo());
             logger.error("Incapacidad no encontrada [incapacidadId={}]", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getDescripcion(),
                             "solucion", CodigoError.INCAPACIDAD_NO_ENCONTRADA.getSolucion()));

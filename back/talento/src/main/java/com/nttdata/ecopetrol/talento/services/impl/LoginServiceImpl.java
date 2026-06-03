@@ -35,22 +35,28 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public ResponseEntity<?> login(LoginRqDTO loginRequest) throws Exception {
         if (loginRequest == null || loginRequest.getUsuario() == null) {
-            MDC.put("codigo_error", CodigoError.LOGIN_FALLIDO.getCodigo());
+            CodigoError ce = CodigoError.LOGIN_FALLIDO;
+            MDC.put("error_code", ce.getCodigo());
+            MDC.put("usuario", "anonimo");
             logger.warn("Login fallido: request o usuario nulo");
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
+            MDC.remove("usuario");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Usuario obligatorio"));
+                    .body(Map.of("usuario", "anonimo", "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         String cleanedUsuario = loginRequest.getUsuario().trim().toLowerCase();
+        MDC.put("usuario", cleanedUsuario);
         Usuario usuario = usuarioRepository.findByUsuario(cleanedUsuario);
 
         if (usuario == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            CodigoError ce = CodigoError.USUARIO_NO_ENCONTRADO;
+            MDC.put("error_code", ce.getCodigo());
             logger.warn("Login fallido: usuario '{}' no encontrado", cleanedUsuario);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
+            MDC.remove("usuario");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Usuario o contraseña incorrectos"));
+                    .body(Map.of("usuario", cleanedUsuario, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         String passwordEncriptada = usuario.getPassword();
@@ -58,11 +64,13 @@ public class LoginServiceImpl implements LoginService {
 
         // Verifica si está bloqueado
         if (usuario.getBloqueadoHasta() != null && usuario.getBloqueadoHasta().isAfter(LocalDateTime.now())) {
-            MDC.put("codigo_error", CodigoError.USUARIO_BLOQUEADO.getCodigo());
+            CodigoError ce = CodigoError.USUARIO_BLOQUEADO;
+            MDC.put("error_code", ce.getCodigo());
             logger.warn("Login bloqueado: usuario '{}' bloqueado hasta {}", cleanedUsuario, usuario.getBloqueadoHasta());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
+            MDC.remove("usuario");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Usuario bloqueado hasta " + usuario.getBloqueadoHasta()));
+                    .body(Map.of("usuario", cleanedUsuario, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         boolean passwordOk = passwordDesencriptada.equals(loginRequest.getContrasena());
@@ -73,6 +81,7 @@ public class LoginServiceImpl implements LoginService {
             usuarioRepository.save(usuario);
 
             logger.info("Login exitoso para usuario '{}'", cleanedUsuario);
+            MDC.remove("usuario");
 
             String token = jwtUtil.generateToken(usuario.getUsuario(), usuario.getRol().name());
             LoginRsDTO dto = LoginRsDTO.builder()
@@ -90,19 +99,21 @@ public class LoginServiceImpl implements LoginService {
             }
             usuarioRepository.save(usuario);
 
-            MDC.put("codigo_error", CodigoError.PASSWORD_INCORRECTA.getCodigo());
+            CodigoError ce = (intentos >= MAX_INTENTOS)
+                    ? CodigoError.USUARIO_BLOQUEADO
+                    : CodigoError.PASSWORD_INCORRECTA;
+
+            MDC.put("error_code", ce.getCodigo());
             logger.warn("Login fallido: contraseña incorrecta para usuario '{}'. Intentos fallidos: {}{}",
                     cleanedUsuario, intentos,
                     intentos >= MAX_INTENTOS ?
                             " (usuario BLOQUEADO hasta " + usuario.getBloqueadoHasta() + ")" : "");
 
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
+            MDC.remove("usuario");
 
-            String msg = (intentos >= MAX_INTENTOS)
-                    ? "Usuario bloqueado por superar intentos fallidos. Intente más tarde."
-                    : "Usuario o contraseña incorrectos";
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", msg));
+                    .body(Map.of("usuario", cleanedUsuario, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
     }
 }

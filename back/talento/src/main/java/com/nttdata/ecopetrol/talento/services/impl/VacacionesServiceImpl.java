@@ -63,9 +63,9 @@ public class VacacionesServiceImpl implements VacacionesService {
         try {
             Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
             if (vac == null) {
-                MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
+                MDC.put("error_code", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
                 logger.error("Vacaciones no encontradas [vacacionesId={}]", id);
-                MDC.remove("codigo_error");
+                MDC.remove("error_code");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
                                 "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));
@@ -78,10 +78,10 @@ public class VacacionesServiceImpl implements VacacionesService {
                     vac.getNumeroEmpleado(), vac.getTotalDias());
             boolean valido = validacionVacacionesService.validarDiasVacacionesDisponibles(vac);
             if (!valido) {
-                MDC.put("codigo_error", CodigoError.SIN_DIAS_SUFI.getCodigo());
+                MDC.put("error_code", CodigoError.SIN_DIAS_SUFI.getCodigo());
                 logger.warn("Empleado sin días suficientes para sus vacaciones [numeroEmpleado={}, solicitado={}]",
                         vac.getNumeroEmpleado(), vac.getTotalDias());
-                MDC.remove("codigo_error");
+                MDC.remove("error_code");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("Error: El empleado no tiene suficientes días de vacaciones disponibles.");
             }
@@ -115,16 +115,16 @@ public class VacacionesServiceImpl implements VacacionesService {
             return ResponseEntity.ok(mapToDto(vac));
 
         } catch (InterruptedException e) {
-            MDC.put("codigo_error", CodigoError.VALIDACION_INTERRUP.getCodigo());
+            MDC.put("error_code", CodigoError.VALIDACION_INTERRUP.getCodigo());
             logger.error("Validación interrumpida para vacaciones [vacacionesId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al validar días disponibles (interrumpido).");
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_VALIDACION.getCodigo());
+            MDC.put("error_code", CodigoError.ERROR_VALIDACION.getCodigo());
             logger.error("Error inesperado al validar vacaciones [vacacionesId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error inesperado de validación: " + e.getMessage());
         }
@@ -206,9 +206,9 @@ public class VacacionesServiceImpl implements VacacionesService {
             logger.info("Solicitud de vacaciones creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(vac));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
+            MDC.put("error_code", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando solicitud de vacaciones: {}", e.getMessage(), e);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
                             "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
@@ -218,9 +218,9 @@ public class VacacionesServiceImpl implements VacacionesService {
     @Transactional
     public ResponseEntity<?> borrarVacaciones(Long id) {
         if (!vacacionesRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
+            MDC.put("error_code", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
             logger.warn("Intento de borrar registro de vacaciones que no existe: id={}", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
                             "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));
@@ -234,9 +234,9 @@ public class VacacionesServiceImpl implements VacacionesService {
     public ResponseEntity<?> rechazarVacaciones(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Vacaciones vac = vacacionesRepository.findById(id).orElse(null);
         if (vac == null) {
-            MDC.put("codigo_error", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
+            MDC.put("error_code", CodigoError.VACACIONES_NO_ENCONTRADAS.getCodigo());
             logger.warn("Vacaciones no encontradas para rechazo: id={}", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", CodigoError.VACACIONES_NO_ENCONTRADAS.getDescripcion(),
                             "solucion", CodigoError.VACACIONES_NO_ENCONTRADAS.getSolucion()));

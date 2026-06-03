@@ -1,6 +1,9 @@
 package com.nttdata.ecopetrol.talento.services.impl;
 
+
 import com.nttdata.ecopetrol.talento.services.NotificacionCorreoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NotificacionCorreoServiceImpl implements NotificacionCorreoService {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificacionCorreoServiceImpl.class);
 
     @Autowired
     private JavaMailSender mailSender;
@@ -22,7 +27,7 @@ public class NotificacionCorreoServiceImpl implements NotificacionCorreoService 
         try {
             mailSender.send(mensaje);
         } catch (MailException ex) {
-            System.err.println("No se pudo enviar la notificacion por correo: " + ex.getMessage());
+            log.error("No se pudo enviar la notificacion por correo: {}", ex.getMessage(), ex);
         }
     }
 }

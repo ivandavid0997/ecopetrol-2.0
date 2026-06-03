@@ -66,9 +66,11 @@ public class CumpleanioServiceImpl implements CumpleanioService {
             logger.info("Día de cumpleaños creado para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(dia));
         } catch (Exception e) {
+            MDC.put("error_code", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
             logger.error("Error creando registro día cumpleaños: {}", e.getMessage(), e);
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al crear registro de día cumpleaños"));
+                    .body(Map.of("error", "Error al crear registro de día de cumpleaños"));
         }
     }
 
@@ -94,9 +96,9 @@ public class CumpleanioServiceImpl implements CumpleanioService {
     @Override
     public ResponseEntity<?> borrarCumpleanio(Long id) {
         if (!cumpleanioRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("error_code", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
             logger.warn("Intento de borrar cumpleaños inexistente id={}", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Registro día cumpleaños no encontrado."));
         }
@@ -109,9 +111,9 @@ public class CumpleanioServiceImpl implements CumpleanioService {
     public ResponseEntity<?> aprobarCumpleanio(Long id, String usuarioActual, HttpServletRequest request) {
         DiaCumpleanio dia = cumpleanioRepository.findById(id).orElse(null);
         if (dia == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("error_code", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
             logger.error("Día cumpleaños no encontrado [diaCumpleanioId={}]", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Día de cumpleaños no encontrado."));
         }
@@ -123,23 +125,23 @@ public class CumpleanioServiceImpl implements CumpleanioService {
             logger.info("Validando días disponibles para día cumpleaños [numeroEmpleado={}]", dia.getNumeroEmpleado());
             boolean valido = validacionVacacionesServiceImpl.validarDiasCumpleanioDisponibles(dia);
             if (!valido) {
-                MDC.put("codigo_error", CodigoError.SIN_DIAS_SUFI.getCodigo());
+                MDC.put("error_code", CodigoError.SIN_DIAS_SUFI.getCodigo());
                 logger.warn("Empleado sin días disponibles para día cumpleaños [numeroEmpleado={}]", dia.getNumeroEmpleado());
-                MDC.remove("codigo_error");
+                MDC.remove("error_code");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(Map.of("error", "No tiene días de cumpleaños disponibles."));
             }
         } catch (InterruptedException e) {
-            MDC.put("codigo_error", CodigoError.VALIDACION_INTERRUP.getCodigo());
+            MDC.put("error_code", CodigoError.VALIDACION_INTERRUP.getCodigo());
             logger.error("Validación interrumpida para día cumpleaños [id={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Validación interrumpida."));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_VALIDACION.getCodigo());
+            MDC.put("error_code", CodigoError.ERROR_VALIDACION.getCodigo());
             logger.error("Error inesperado al validar día cumpleaños [id={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error inesperado de validación: " + e.getMessage()));
         }
@@ -175,9 +177,9 @@ public class CumpleanioServiceImpl implements CumpleanioService {
     public ResponseEntity<?> rechazarCumpleanio(Long id, String usuarioActual, HttpServletRequest request) {
         DiaCumpleanio dia = cumpleanioRepository.findById(id).orElse(null);
         if (dia == null) {
-            MDC.put("codigo_error", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
+            MDC.put("error_code", CodigoError.USUARIO_NO_ENCONTRADO.getCodigo());
             logger.warn("Día cumpleaños no encontrado [diaCumpleanioId={}]", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Día de cumpleaños no encontrado."));
         }

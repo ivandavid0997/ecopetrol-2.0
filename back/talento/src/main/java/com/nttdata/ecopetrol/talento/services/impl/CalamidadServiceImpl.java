@@ -48,6 +48,7 @@ public class CalamidadServiceImpl implements CalamidadService {
 
     @Override
     public ResponseEntity<?> crearCalamidad(CalamidadRqDTO dto) {
+        String usuarioActual = MDC.get("usuario") != null ? MDC.get("usuario") : "desconocido";
         try {
             Calamidad cal = new Calamidad();
             cal.setNumeroEmpleado(dto.getNumeroEmpleado());
@@ -68,12 +69,12 @@ public class CalamidadServiceImpl implements CalamidadService {
             logger.info("Calamidad creada para empleado {}", dto.getNumeroEmpleado());
             return ResponseEntity.ok(mapToDto(cal));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_CREAR_SOLICITUD.getCodigo());
+            CodigoError ce = CodigoError.ERROR_CREAR_SOLICITUD;
+            MDC.put("error_code", ce.getCodigo());
             logger.error("Error creando calamidad: {}", e.getMessage(), e);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", CodigoError.ERROR_CREAR_SOLICITUD.getDescripcion(),
-                            "solucion", CodigoError.ERROR_CREAR_SOLICITUD.getSolucion()));
+                    .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
     }
 
@@ -87,13 +88,14 @@ public class CalamidadServiceImpl implements CalamidadService {
 
     @Override
     public ResponseEntity<?> borrarCalamidad(Long id) {
+        String usuarioActual = MDC.get("usuario") != null ? MDC.get("usuario") : "desconocido";
         if (!calamidadRepository.existsById(id)) {
-            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
+            CodigoError ce = CodigoError.CALAMIDAD_NO_ENCONTRADA;
+            MDC.put("error_code", ce.getCodigo());
             logger.warn("Intento de borrar calamidad inexistente id={}", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
-                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
+                    .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
         logger.info("Eliminando calamidad id={}", id);
         calamidadRepository.deleteById(id);
@@ -101,15 +103,15 @@ public class CalamidadServiceImpl implements CalamidadService {
     }
 
     @Override
-    public ResponseEntity<?> aprobarCalamidad(Long id, String usuarioActual,HttpServletRequest request) throws JsonProcessingException {
+    public ResponseEntity<?> aprobarCalamidad(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
         Calamidad cal = calamidadRepository.findById(id).orElse(null);
         if (cal == null) {
-            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
+            CodigoError ce = CodigoError.CALAMIDAD_NO_ENCONTRADA;
+            MDC.put("error_code", ce.getCodigo());
             logger.error("Calamidad no encontrada [calamidadId={}]", id);
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
-                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
+                    .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         Calamidad copiaAntes = new Calamidad();
@@ -120,32 +122,34 @@ public class CalamidadServiceImpl implements CalamidadService {
                     cal.getNumeroEmpleado(), cal.getTotalDias());
             boolean valido = validacionVacacionesServiceImpl.validarDiasCalamidadDisponibles(cal);
             if (!valido) {
-                MDC.put("codigo_error", CodigoError.SIN_DIAS_SUFI.getCodigo());
+                CodigoError ce = CodigoError.SIN_DIAS_SUFI;
+                MDC.put("error_code", ce.getCodigo());
                 logger.warn("Empleado sin días suficientes para calamidad [numeroEmpleado={}, solicitado={}]",
                         cal.getNumeroEmpleado(), cal.getTotalDias());
-                MDC.remove("codigo_error");
+                MDC.remove("error_code");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Map.of("error", "El empleado no tiene suficientes días de calamidad disponibles."));
+                        .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
             }
         } catch (InterruptedException e) {
-            MDC.put("codigo_error", CodigoError.VALIDACION_INTERRUP.getCodigo());
+            CodigoError ce = CodigoError.VALIDACION_INTERRUP;
+            MDC.put("error_code", ce.getCodigo());
             logger.error("Validación interrumpida para calamidad [calamidadId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             Thread.currentThread().interrupt();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al validar días disponibles (interrumpido)."));
+                    .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         } catch (Exception e) {
-            MDC.put("codigo_error", CodigoError.ERROR_VALIDACION.getCodigo());
+            CodigoError ce = CodigoError.ERROR_VALIDACION;
+            MDC.put("error_code", ce.getCodigo());
             logger.error("Error inesperado al validar calamidad [calamidadId={}]: {}", id, e.getMessage());
-            MDC.remove("codigo_error");
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error inesperado de validación: " + e.getMessage()));
+                    .body(Map.of("usuario", usuarioActual, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         cal.setEstado(Estado.APROBADA);
         calamidadRepository.save(cal);
-        logger.info("Calamidad aprobada correctamente [calamidadId={}, numeroEmpleado={}, aprobador={}]",
-                id, cal.getNumeroEmpleado(), usuarioActual);
+        logger.info("Calamidad aprobada [calamidadId={}, numeroEmpleado={}, aprobador={}]", id, cal.getNumeroEmpleado(), usuarioActual);
 
         AuditHelper.auditarCambio(
                 "calamidades",
@@ -161,25 +165,26 @@ public class CalamidadServiceImpl implements CalamidadService {
         );
 
         notificacionCorreoServiceImpl.enviarCorreo(
-                "farid.esteban.martinez.hernandez@emeal.nttdata.com",
+                "responsable@dominio.com",
                 "Solicitud de Calamidad Aprobada",
-                "Estimado " + cal.getNombreEmpleado() + ", su solicitud ha sido aprobada."
+                "Estimado " + cal.getNombreEmpleado() + ", su solicitud de calamidad ha sido aprobada."
         );
-        logger.info("Correo de aprobación enviado a {}", "farid.esteban.martinez.hernandez@emeal.nttdata.com");
+        logger.info("Correo de aprobación de calamidad enviado a {}", cal.getNombreEmpleado());
 
         return ResponseEntity.ok(mapToDto(cal));
     }
 
     @Override
     public ResponseEntity<?> rechazarCalamidad(Long id, String usuarioActual, HttpServletRequest request) throws JsonProcessingException {
+        String usuarioCtx = MDC.get("usuario") != null ? MDC.get("usuario") : usuarioActual;
         Calamidad cal = calamidadRepository.findById(id).orElse(null);
         if (cal == null) {
-            MDC.put("codigo_error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getCodigo());
-            logger.error("Calamidad no encontrada [calamidadId={}]", id);
-            MDC.remove("codigo_error");
+            CodigoError ce = CodigoError.CALAMIDAD_NO_ENCONTRADA;
+            MDC.put("error_code", ce.getCodigo());
+            logger.warn("Calamidad no encontrada para rechazo [calamidadId={}]", id);
+            MDC.remove("error_code");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", CodigoError.CALAMIDAD_NO_ENCONTRADA.getDescripcion(),
-                            "solucion", CodigoError.CALAMIDAD_NO_ENCONTRADA.getSolucion()));
+                    .body(Map.of("usuario", usuarioCtx, "error_code", ce.getCodigo(), "message", ce.getDescripcion()));
         }
 
         Calamidad copiaAntes = new Calamidad();
@@ -187,6 +192,7 @@ public class CalamidadServiceImpl implements CalamidadService {
 
         cal.setEstado(Estado.RECHAZADA);
         calamidadRepository.save(cal);
+        logger.info("Calamidad rechazada [calamidadId={}, numeroEmpleado={}, aprobador={}]", id, cal.getNumeroEmpleado(), usuarioActual);
 
         AuditHelper.auditarCambio(
                 "calamidades",
@@ -202,20 +208,19 @@ public class CalamidadServiceImpl implements CalamidadService {
         );
 
         notificacionCorreoServiceImpl.enviarCorreo(
-                "farid.esteban.martinez.hernandez@emeal.nttdata.com",
+                "responsable@dominio.com",
                 "Solicitud de Calamidad Rechazada",
-                "Estimado " + cal.getNombreEmpleado() + ", su solicitud ha sido rechazada."
+                "Estimado " + cal.getNombreEmpleado() + ", su solicitud de calamidad ha sido rechazada."
         );
-        logger.info("Calamidad rechazada correctamente [calamidadId={}, numeroEmpleado={}, aprobador={}]",
-                id, cal.getNumeroEmpleado(), usuarioActual);
+        logger.info("Correo de rechazo de calamidad enviado a {}", cal.getNombreEmpleado());
 
         return ResponseEntity.ok(mapToDto(cal));
     }
 
     @Override
     public ResponseEntity<?> listarCalamidadesPendientes() {
-        List<Calamidad> todas = calamidadRepository.findAll();
-        List<CalamidadRsDTO> pendientes = todas.stream()
+        List<Calamidad> list = calamidadRepository.findAll();
+        List<CalamidadRsDTO> pendientes = list.stream()
                 .filter(c -> Estado.PENDIENTE.name().equals(c.getEstado().name()))
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
@@ -229,8 +234,10 @@ public class CalamidadServiceImpl implements CalamidadService {
                 .numeroEmpleado(cal.getNumeroEmpleado())
                 .nombreEmpleado(cal.getNombreEmpleado())
                 .unidadNegocio(cal.getUnidadNegocio())
+                .fechaEvento(cal.getFechaInicio() != null ? java.sql.Date.valueOf(cal.getFechaInicio()) : null)
                 .totalDias(cal.getTotalDias())
-                .estado(Estado.valueOf(cal.getEstado().name()))
+                .motivo(cal.getDescripcion())
+                .estado(cal.getEstado())
                 .build();
     }
 }

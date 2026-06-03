@@ -30,6 +30,8 @@ public class CorrelationIdFilter implements Filter {
             chain.doFilter(req, res);
         } finally {
             MDC.remove("correlation_id");
+            MDC.remove("usuario");
+            MDC.remove("error_code");
         }
     }
 }
