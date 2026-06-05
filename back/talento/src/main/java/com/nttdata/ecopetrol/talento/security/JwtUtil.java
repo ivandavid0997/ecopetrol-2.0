@@ -2,6 +2,7 @@ package com.nttdata.ecopetrol.talento.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,9 +12,13 @@ import java.security.Key;
 @Component
 public class JwtUtil {
 
-    // Usa una clave secreta fuerte (32 caracteres mínimo)
-    private final String SECRET_KEY = "bS7Gz2HkX3NdP8aQrLvEw5jFu6VmY1Tp";
-    private final long EXPIRATION_MS = 6 * 60 * 60 * 1000; // 6 horas
+    // Clave secreta fuerte (32 caracteres mínimo). Configurable vía JWT_SECRET.
+    @Value("${jwt.secret:bS7Gz2HkX3NdP8aQrLvEw5jFu6VmY1Tp}")
+    private String SECRET_KEY;
+
+    // Vigencia del token en milisegundos. Configurable vía JWT_EXPIRATION_MS (default 6 h).
+    @Value("${jwt.expiration-ms:21600000}")
+    private long EXPIRATION_MS;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

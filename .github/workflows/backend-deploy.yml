@@ -60,6 +60,28 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # ---------------------------------------------------------------
+      # Variables de configuración del backend (JWT / AES / API Nómina)
+      # ---------------------------------------------------------------
+      # La app las lee como variables de entorno; los valores por defecto
+      # están embebidos en la imagen (application.properties), así que el
+      # contenedor funciona sin setearlas aquí:
+      #   JWT_SECRET, JWT_EXPIRATION_MS,
+      #   AES_SECRET_KEY, AES_INIT_VECTOR,
+      #   NOMINA_API_URL, NOMINA_API_KEY
+      #
+      # `az container restart` NO inyecta env nuevas y CONSERVA el env seguro
+      # ya existente del ACI2 (ECOPETROL_DB2_PASSWORD). Para rotar/override
+      # alguna de estas SIN perder ese secreto hay que RECREAR el contenedor
+      # pasando TODA la env segura (incluida la clave de BD), p.ej.:
+      #
+      #   az container create -g "$ACI_RG" -n "$ACI_NAME" \
+      #     --image "$ACR_LOGIN_SERVER/$IMAGE_NAME:latest" \
+      #     --secure-environment-variables \
+      #       ECOPETROL_DB2_PASSWORD="<secret>" \
+      #       JWT_SECRET="<secret>" JWT_EXPIRATION_MS="21600000" \
+      #       AES_SECRET_KEY="<secret>" AES_INIT_VECTOR="<secret>" \
+      #       NOMINA_API_URL="<url>" NOMINA_API_KEY="<secret>"
       - name: Restart ACI to pick up new image
         if: env.HAS_AZURE_CREDS == 'true'
         uses: azure/cli@v2
