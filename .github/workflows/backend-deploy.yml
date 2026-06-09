@@ -60,16 +60,81 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Restart ACI to pick up new image
+      # ACI no permite agregar/cambiar env vars "in-place" ni `az container restart`
+      # baja de forma fiable una imagen nueva (reinicia el mismo digest). Por eso se
+      # recrea el contenedor apuntando al tag del commit (:${sha}) e inyectando TODOS
+      # los secretos. Conservar el dns-name-label preserva el FQDN
+      # (talento-eco2.centralus.azurecontainer.io) aunque cambie la IP pública.
+      #
+      # Requiere estos GitHub Secrets en el repo (Settings > Secrets and variables > Actions):
+      #   JWT_SECRET, AES_SECRET_KEY, AES_INIT_VECTOR, NOMINA_API_KEY,
+      #   NOMINA_API_URL, ECOPETROL_DB2_PASSWORD  (+ los ya existentes
+      #   ACR2_USERNAME, ACR2_PASSWORD, AZURE_CREDENTIALS).
+      # JWT_EXPIRATION_MS es opcional (el código tiene default 21600000).
+      - name: Redeploy ACI (entorno 2) con env vars
         if: env.HAS_AZURE_CREDS == 'true'
         uses: azure/cli@v2
+        env:
+          ACR2_USERNAME: ${{ secrets.ACR2_USERNAME }}
+          ACR2_PASSWORD: ${{ secrets.ACR2_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+          AES_SECRET_KEY: ${{ secrets.AES_SECRET_KEY }}
+          AES_INIT_VECTOR: ${{ secrets.AES_INIT_VECTOR }}
+          NOMINA_API_URL: ${{ secrets.NOMINA_API_URL }}
+          NOMINA_API_KEY: ${{ secrets.NOMINA_API_KEY }}
+          ECOPETROL_DB2_PASSWORD: ${{ secrets.ECOPETROL_DB2_PASSWORD }}
         with:
           azcliversion: latest
           inlineScript: |
-            az container restart --name "${ACI_NAME}" --resource-group "${ACI_RG}"
-            echo "ACI ${ACI_NAME} reiniciado — ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest (commit ${{ github.sha }})"
+            set -e
+
+            # 1) Validar que los secretos OBLIGATORIOS existen ANTES de borrar el
+            #    contenedor (delete+create implica downtime: si create fallara por un
+            #    secret faltante, el servicio quedaría caído). Abortamos sin tocar nada.
+            missing=""
+            for v in JWT_SECRET AES_SECRET_KEY AES_INIT_VECTOR NOMINA_API_KEY NOMINA_API_URL ECOPETROL_DB2_PASSWORD ACR2_USERNAME ACR2_PASSWORD; do
+              if [ -z "${!v}" ]; then missing="$missing $v"; fi
+            done
+            if [ -n "$missing" ]; then
+              echo "::error title=Faltan GitHub Secrets::Define estos secrets en el repo antes de desplegar:$missing. ACI NO modificado."
+              exit 1
+            fi
+            JWT_EXPIRATION_MS="${JWT_EXPIRATION_MS:-21600000}"
+            IMAGE="${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${GITHUB_SHA}"
+
+            echo "Borrando ACI actual (entorno 2)..."
+            az container delete -n "$ACI_NAME" -g "$ACI_RG" --yes
+
+            echo "Creando ACI con imagen $IMAGE e inyectando env vars..."
+            az container create -g "$ACI_RG" -n "$ACI_NAME" \
+              --image "$IMAGE" \
+              --os-type Linux \
+              --cpu 1 --memory 2 \
+              --ports 8080 \
+              --ip-address Public \
+              --dns-name-label talento-eco2 \
+              --location centralus \
+              --restart-policy OnFailure \
+              --registry-login-server "$ACR_LOGIN_SERVER" \
+              --registry-username "$ACR2_USERNAME" \
+              --registry-password "$ACR2_PASSWORD" \
+              --environment-variables \
+                SPRING_PROFILES_ACTIVE=azure2 \
+                JWT_EXPIRATION_MS="$JWT_EXPIRATION_MS" \
+                NOMINA_API_URL="$NOMINA_API_URL" \
+              --secure-environment-variables \
+                JWT_SECRET="$JWT_SECRET" \
+                AES_SECRET_KEY="$AES_SECRET_KEY" \
+                AES_INIT_VECTOR="$AES_INIT_VECTOR" \
+                NOMINA_API_KEY="$NOMINA_API_KEY" \
+                ECOPETROL_DB2_PASSWORD="$ECOPETROL_DB2_PASSWORD"
+
+            echo "Estado final del ACI:"
+            az container show -n "$ACI_NAME" -g "$ACI_RG" \
+              --query "{state:instanceView.state, ip:ipAddress.ip, fqdn:ipAddress.fqdn, image:containers[0].image}" -o json
 
       - name: Notice — Azure redeploy skipped
         if: env.HAS_AZURE_CREDS != 'true'
         run: |
-          echo "::warning title=Redeploy skipped::Imagen subida a ACR2 pero el ACI no se reinició: falta el secret AZURE_CREDENTIALS. Agrégalo para habilitar el auto-redeploy."
+          echo "::warning title=Redeploy skipped::Imagen subida a ACR2 pero el ACI no se recreó: falta el secret AZURE_CREDENTIALS. Agrégalo para habilitar el auto-redeploy."
