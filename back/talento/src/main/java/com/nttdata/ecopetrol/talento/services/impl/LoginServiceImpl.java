@@ -26,10 +26,12 @@ public class LoginServiceImpl implements LoginService {
 
     private final UsuarioRepository usuarioRepository;
     private final JwtUtil jwtUtil;
+    private final AesUtil aesUtil;
 
-    public LoginServiceImpl(UsuarioRepository usuarioRepository, JwtUtil jwtUtil) {
+    public LoginServiceImpl(UsuarioRepository usuarioRepository, JwtUtil jwtUtil, AesUtil aesUtil) {
         this.usuarioRepository = usuarioRepository;
         this.jwtUtil = jwtUtil;
+        this.aesUtil = aesUtil;
     }
 
     @Override
@@ -60,7 +62,9 @@ public class LoginServiceImpl implements LoginService {
         }
 
         String passwordEncriptada = usuario.getPassword();
-        String passwordDesencriptada = AesUtil.decrypt(passwordEncriptada);
+        logger.info("passwordEncriptada",passwordEncriptada);
+        String passwordDesencriptada = aesUtil.decrypt(passwordEncriptada);
+        logger.info("passwordDesencriptada",passwordDesencriptada);
 
         // Verifica si está bloqueado
         if (usuario.getBloqueadoHasta() != null && usuario.getBloqueadoHasta().isAfter(LocalDateTime.now())) {

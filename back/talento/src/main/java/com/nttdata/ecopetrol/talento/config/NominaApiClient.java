@@ -4,6 +4,7 @@ import com.nttdata.ecopetrol.talento.dto.request.CierreMesRequestDTO;
 import com.nttdata.ecopetrol.talento.dto.request.CierreMesResultadoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,7 +16,13 @@ import org.springframework.web.client.RestTemplate;
 public class NominaApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NominaApiClient.class);
-    private final String nominaEndpointUrl = "http://52.233.91.10:8888/api/nomina/cierreMes";
+
+    @Value("${nomina.api.url}")
+    private String nominaEndpointUrl;
+
+    @Value("${nomina.api.key}")
+    private String nominaApiKey;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public CierreMesResultadoDTO enviarCierreMes(String tipo, Long id, String nombreEmpleado) {
@@ -26,6 +33,7 @@ public class NominaApiClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Api-Key", nominaApiKey);
 
         HttpEntity<CierreMesRequestDTO> requestEntity = new HttpEntity<>(dto, headers);
 

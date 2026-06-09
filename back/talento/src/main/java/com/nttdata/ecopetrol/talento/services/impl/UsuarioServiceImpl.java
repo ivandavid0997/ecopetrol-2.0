@@ -20,9 +20,11 @@ import java.util.stream.Collectors;
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private static final Logger logger = LoggerFactory.getLogger(UsuarioServiceImpl.class);
+    private final AesUtil aesUtil;
 
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, AesUtil aesUtil) {
         this.usuarioRepository = usuarioRepository;
+        this.aesUtil = aesUtil;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             user.setRol(dto.getRol());
             user.setNumeroEmpleado(dto.getNumeroEmpleado() == null ? null : String.valueOf(dto.getNumeroEmpleado()));
             user.setUnidadNegocio(dto.getUnidadNegocio());
-            user.setPassword(AesUtil.encrypt(dto.getPassword()));
+            user.setPassword(aesUtil.encrypt(dto.getPassword()));
             user.setIntentosFallidos(0);
             user.setBloqueadoHasta(null);
 
